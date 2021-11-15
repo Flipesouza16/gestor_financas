@@ -1,0 +1,7 @@
+{
+  "name": "gestor_financas",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
