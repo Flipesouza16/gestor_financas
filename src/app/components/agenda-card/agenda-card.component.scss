@@ -1,6 +1,13 @@
 ion-card {
   border-radius: 10px;
   border-left: 2px solid pink;
+  margin: 15px 10px 18px 10px;
+
+  ion-chip {
+    width: 80.05px;
+    text-align: center;
+    justify-content: center;
+  }
 }
 
 .content {

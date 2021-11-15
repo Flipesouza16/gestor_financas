@@ -1,6 +1,6 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>agenda</ion-title>
+    <ion-title>Agenda de Novembro</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -9,6 +9,15 @@
     <app-agenda-card
       [purchaseTitle]="compra.title"
       [purchaseValue]="compra.value"
+      [isPurchasePaid]="compra.isPaid"
+      [isLatePurchasePayment]="compra.isLate"
+      [purchaseInstallments]="compra.installments"
     ></app-agenda-card>
   </ng-template>
+
+   <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+    <ion-fab-button color="light">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
 </ion-content>

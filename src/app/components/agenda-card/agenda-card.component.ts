@@ -8,6 +8,9 @@ import { Component, Input, OnInit } from '@angular/core';
 export class AgendaCardComponent implements OnInit {
   @Input() purchaseTitle: string;
   @Input() purchaseValue: string;
+  @Input() isPurchasePaid: boolean;
+  @Input() isLatePurchasePayment: boolean;
+  @Input() purchaseInstallments: number;
 
   constructor() {}
 

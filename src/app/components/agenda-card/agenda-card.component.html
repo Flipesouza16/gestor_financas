@@ -2,10 +2,16 @@
   <ion-card-content class="content">
     <div>
       <ion-card-subtitle>{{ purchaseTitle }}</ion-card-subtitle>
-      <ion-card-title>R$ {{ purchaseValue }}</ion-card-title>
+      <ion-card-title>R$ {{ purchaseValue }} <b>{{ purchaseInstallments }}x</b></ion-card-title>
     </div>
-    <ion-chip color="secondary">
+    <ion-chip color="success" *ngIf="isPurchasePaid">
       <ion-label>Pago</ion-label>
+    </ion-chip>
+    <ion-chip color="secondary" *ngIf="!isPurchasePaid && !isLatePurchasePayment">
+      <ion-label>A Pagar</ion-label>
+    </ion-chip>
+    <ion-chip color="danger" *ngIf="!isPurchasePaid && isLatePurchasePayment">
+      <ion-label>Atrasado</ion-label>
     </ion-chip>
   </ion-card-content>
 </ion-card>
