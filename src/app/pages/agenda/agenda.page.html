@@ -1,0 +1,14 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>agenda</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ng-template ngFor let-compra [ngForOf]="compras" let-i="index">
+    <app-agenda-card
+      [purchaseTitle]="compra.title"
+      [purchaseValue]="compra.value"
+    ></app-agenda-card>
+  </ng-template>
+</ion-content>
