@@ -3,10 +3,11 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AgendaCardComponent } from './agenda-card/agenda-card.component';
+import { RegistrationFormComponent } from './registration-form/registration-form.component';
 
 @NgModule({
-  declarations: [AgendaCardComponent],
+  declarations: [AgendaCardComponent, RegistrationFormComponent],
   imports: [IonicModule, CommonModule, FormsModule],
-  exports: [AgendaCardComponent],
+  exports: [AgendaCardComponent, RegistrationFormComponent],
 })
 export class ComponentsModule {}

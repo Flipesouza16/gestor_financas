@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ModalController } from '@ionic/angular';
+import { RegistrationFormComponent } from 'src/app/components/registration-form/registration-form.component';
 
 @Component({
   selector: 'app-agenda',
@@ -44,7 +46,15 @@ export class AgendaPage implements OnInit {
     },
   ];
 
-  constructor() {}
+  constructor(private modalCtrl: ModalController) {}
 
   ngOnInit() {}
+
+  async addNewPurchase() {
+    const modal = this.modalCtrl.create({
+      component: RegistrationFormComponent
+    });
+
+    (await modal).present();
+  }
 }
