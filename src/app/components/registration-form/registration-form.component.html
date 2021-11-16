@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Adicionar Nova Compra</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-card style="border-radius: 10px">
+    <ion-card-header>
+      <ion-card-subtitle style="font-size: 17px">Pagamento a partir do próximo mês</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item>
+          <ion-label position="floating">Título da Compra</ion-label>
+          <ion-input></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Qual o valor da compra?</ion-label>
+          <ion-input></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Quem está comprando?</ion-label>
+          <ion-input></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label>Quantas parcelas?</ion-label>
+          <ion-select interface="popover">
+            <ion-select-option value="1">1x</ion-select-option>
+            <ion-select-option value="2">2x</ion-select-option>
+            <ion-select-option value="3">3x</ion-select-option>
+            <ion-select-option value="4">4x</ion-select-option>
+            <ion-select-option value="5">5x</ion-select-option>
+            <ion-select-option value="6">6x</ion-select-option>
+            <ion-select-option value="7">7x</ion-select-option>
+            <ion-select-option value="8">8x</ion-select-option>
+            <ion-select-option value="9">9x</ion-select-option>
+            <ion-select-option value="10">10x</ion-select-option>
+            <ion-select-option value="11">11x</ion-select-option>
+            <ion-select-option value="12">12x</ion-select-option>
+          </ion-select>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-button expand="full" shape="round" fill="outline">Adicionar Compra</ion-button>
+  </ion-toolbar>
+</ion-footer>
