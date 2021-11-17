@@ -3,7 +3,7 @@ import { ModalController } from '@ionic/angular';
 
 type PayloadRegistrationForm = {
   purchaseTitle: string;
-  purchaseValue: string;
+  purchaseValue: number;
   personWhoIsBuying: string;
   purchaseInstallments: number;
 };
@@ -18,7 +18,7 @@ export class RegistrationFormComponent implements OnInit {
     personWhoIsBuying: '',
     purchaseInstallments: 1,
     purchaseTitle: '',
-    purchaseValue: '',
+    purchaseValue: 0,
   };
 
   constructor(private modalCtrl: ModalController) {}

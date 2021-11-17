@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { CUSTOM_ELEMENTS_SCHEMA, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { IonicModule } from '@ionic/angular';
 import { AgendaCardComponent } from './agenda-card/agenda-card.component';
@@ -9,5 +9,6 @@ import { RegistrationFormComponent } from './registration-form/registration-form
   declarations: [AgendaCardComponent, RegistrationFormComponent],
   imports: [IonicModule, CommonModule, FormsModule],
   exports: [AgendaCardComponent, RegistrationFormComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class ComponentsModule {}

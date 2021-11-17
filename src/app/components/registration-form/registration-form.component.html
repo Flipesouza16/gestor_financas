@@ -22,7 +22,7 @@
         </ion-item>
         <ion-item>
           <ion-label position="floating">Qual o valor da compra?</ion-label>
-          <ion-input type="number" [(ngModel)]="payloadRegistrationForm.purchaseValue"></ion-input>
+          <ion-input [ngModel]="payloadRegistrationForm.purchaseValue | currency: 'BRL'" (ngModelChange)="payloadRegistrationForm.purchaseValue = $event"></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Quem está comprando?</ion-label>
