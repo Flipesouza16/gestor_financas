@@ -27,7 +27,7 @@
         <ion-item>
           <ion-label position="floating">Qual o valor da compra?</ion-label>
           <div class="purchaseValueContainer">
-            R$ &nbsp;
+            <b *ngIf="purchaseValueFormatted.length">R$</b> &nbsp;
             <ion-input
               placeholder="0,00"
               [value]="mascaraMoedaReal(purchaseValueFormatted)"
