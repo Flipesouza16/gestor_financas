@@ -12,26 +12,43 @@
 <ion-content>
   <ion-card>
     <ion-card-header>
-      <ion-card-subtitle style="font-size: 17px">Pagamento a partir do próximo mês</ion-card-subtitle>
+      <ion-card-subtitle style="font-size: 17px"
+        >Pagamento a partir do próximo mês</ion-card-subtitle
+      >
     </ion-card-header>
     <ion-card-content>
       <ion-list>
         <ion-item>
           <ion-label position="floating">Título da Compra</ion-label>
-          <ion-input [(ngModel)]="payloadRegistrationForm.purchaseTitle"></ion-input>
+          <ion-input
+            [(ngModel)]="payloadRegistrationForm.purchaseTitle"
+          ></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Qual o valor da compra?</ion-label>
-          <ion-input [ngModel]="payloadRegistrationForm.purchaseValue | currency: 'BRL'" (ngModelChange)="payloadRegistrationForm.purchaseValue = $event"></ion-input>
+          <div class="purchaseValueContainer">
+            R$ &nbsp;
+            <ion-input
+              placeholder="0,00"
+              [value]="mascaraMoedaReal(purchaseValueFormatted)"
+              (ionChange)="formatValue($event)"
+            ></ion-input>
+          </div>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Quem está comprando?</ion-label>
-          <ion-input [(ngModel)]="payloadRegistrationForm.personWhoIsBuying"></ion-input>
+          <ion-input
+            [(ngModel)]="payloadRegistrationForm.personWhoIsBuying"
+          ></ion-input>
         </ion-item>
         <ion-item>
           <ion-label>Quantas parcelas?</ion-label>
-          <ion-select interface="popover" [(ngModel)]="payloadRegistrationForm.purchaseInstallments">
-            <ion-select-option value="1">1x</ion-select-option>
+          <ion-select
+            interface="popover"
+            value="1"
+            (ionChange)="getInstallments($event)"
+          >
+            <ion-select-option [checked]="true" value="1">1x</ion-select-option>
             <ion-select-option value="2">2x</ion-select-option>
             <ion-select-option value="3">3x</ion-select-option>
             <ion-select-option value="4">4x</ion-select-option>
@@ -52,6 +69,12 @@
 
 <ion-footer>
   <ion-toolbar>
-    <ion-button expand="full" shape="round" fill="outline" (click)="addNewPurchase()">Adicionar Compra</ion-button>
+    <ion-button
+      expand="full"
+      shape="round"
+      fill="outline"
+      (click)="addNewPurchase()"
+      >Adicionar Compra</ion-button
+    >
   </ion-toolbar>
 </ion-footer>

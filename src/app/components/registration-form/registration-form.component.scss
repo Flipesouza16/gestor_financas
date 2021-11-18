@@ -2,5 +2,10 @@ ion-card {
   border-radius: 10px;
   ion-item {
     border-left: 2px solid pink;
+
+    .purchaseValueContainer {
+      display: flex;
+      align-items: center;
+    }
   }
 }
