@@ -2,7 +2,7 @@
   <ion-card-content class="content">
     <div>
       <ion-card-subtitle>{{ purchaseTitle }}</ion-card-subtitle>
-      <ion-card-title>R$ {{ purchaseValue }} <b>{{ purchaseInstallments }}x</b></ion-card-title>
+      <ion-card-title>R$ {{ mascaraMoedaReal(purchaseValueFormatted) }} <b>{{ purchaseInstallments }}x</b></ion-card-title>
     </div>
     <ion-chip color="success" *ngIf="isPurchasePaid">
       <ion-label>Pago</ion-label>
