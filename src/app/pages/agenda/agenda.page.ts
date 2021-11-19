@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { RegistrationFormComponent } from 'src/app/components/registration-form/registration-form.component';
+import { PayloadRegistrationForm, PurchaseModel } from 'src/app/utils/types/purchaseType';
 
 @Component({
   selector: 'app-agenda',
@@ -8,38 +9,38 @@ import { RegistrationFormComponent } from 'src/app/components/registration-form/
   styleUrls: ['./agenda.page.scss'],
 })
 export class AgendaPage implements OnInit {
-  public compras = [
+  public compras: PurchaseModel[] = [
     {
       title: 'Monitor',
-      value: '261,50',
+      value: 26150,
       isPaid: true,
       isLate: false,
       installments: 3,
     },
     {
       title: 'Celular',
-      value: '1.261,50',
+      value: 126150,
       isPaid: false,
       isLate: false,
       installments: 2,
     },
     {
       title: 'Fatura do nubank',
-      value: '800,00',
+      value: 80000,
       isPaid: true,
       isLate: false,
       installments: 1,
     },
     {
       title: 'Despesas da casa',
-      value: '700,00',
+      value: 70000,
       isPaid: false,
       isLate: true,
       installments: 3,
     },
     {
       title: 'Portão',
-      value: '97,86',
+      value: 9786,
       isPaid: false,
       isLate: false,
       installments: 1,
@@ -51,10 +52,23 @@ export class AgendaPage implements OnInit {
   ngOnInit() {}
 
   async addNewPurchase() {
-    const modal = this.modalCtrl.create({
-      component: RegistrationFormComponent
+    const modal = await this.modalCtrl.create({
+      component: RegistrationFormComponent,
     });
 
-    (await modal).present();
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    const payload = data as PayloadRegistrationForm;
+
+    const newPurchase: PurchaseModel = {
+      value: payload.purchaseValue,
+      installments: payload.purchaseInstallments,
+      title: payload.purchaseTitle,
+      isLate: false,
+      isPaid: false,
+    };
+
+    this.compras.push(newPurchase);
   }
 }
