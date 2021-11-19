@@ -17,6 +17,7 @@ export class UtilsService {
       mode: 'ios',
       duration,
       position,
+      color: 'primary',
     });
 
     await toast.present();

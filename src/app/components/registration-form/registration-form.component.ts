@@ -1,14 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { UtilsService } from 'src/app/services/utils/utils.service';
+import { PayloadRegistrationForm } from 'src/app/utils/types/purchaseType';
 import { mascaraMoedaReal } from '../../utils/utils';
-
-type PayloadRegistrationForm = {
-  purchaseTitle: string;
-  purchaseValue: number;
-  personWhoIsBuying: string;
-  purchaseInstallments: number;
-};
 
 @Component({
   selector: 'app-registration-form',
