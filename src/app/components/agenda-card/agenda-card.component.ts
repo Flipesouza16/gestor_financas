@@ -12,6 +12,7 @@ export class AgendaCardComponent implements OnInit {
   @Input() isPurchasePaid: boolean;
   @Input() isLatePurchasePayment: boolean;
   @Input() purchaseInstallments: number;
+  @Input() buyer: string;
 
   purchaseValueFormatted: string;
   mascaraMoedaReal = mascaraMoedaReal;

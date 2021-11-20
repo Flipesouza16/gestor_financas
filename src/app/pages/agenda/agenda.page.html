@@ -5,17 +5,37 @@
 </ion-header>
 
 <ion-content>
-  <ng-template ngFor let-compra [ngForOf]="compras" let-i="index">
-    <app-agenda-card
-      [purchaseTitle]="compra.title"
-      [purchaseValue]="compra.value"
-      [isPurchasePaid]="compra.isPaid"
-      [isLatePurchasePayment]="compra.isLate"
-      [purchaseInstallments]="compra.installments"
-    ></app-agenda-card>
-  </ng-template>
+  <ion-list lines="none">
+    <ion-item-sliding color="danger" *ngFor="let purchase of purchases">
+      <app-agenda-card
+        [purchaseTitle]="purchase.title"
+        [purchaseValue]="purchase.value"
+        [buyer]="purchase.buyer"
+        [isPurchasePaid]="purchase.isPaid"
+        [isLatePurchasePayment]="purchase.isLate"
+        [purchaseInstallments]="purchase.installments"
+      ></app-agenda-card>
+      <ion-item-options side="end">
+        <ion-button
+          slot="end"
+          shape="round"
+          fill="outline"
+          color="warning"
 
-   <ion-fab horizontal="end" vertical="bottom" slot="fixed">
+          >Editar</ion-button
+        >
+        <ion-button
+          slot="end"
+          shape="round"
+          fill="outline"
+          color="danger"
+          >Remover</ion-button
+        >
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab horizontal="end" vertical="bottom" slot="fixed">
     <ion-fab-button color="light" (click)="addNewPurchase()">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>

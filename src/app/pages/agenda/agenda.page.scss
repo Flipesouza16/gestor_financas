@@ -1,0 +1,15 @@
+ion-list {
+  background-color: transparent;
+
+  ion-item-options {
+    align-items: center;
+    flex-direction: column;
+    margin-right: -100px;
+
+    ion-button {
+      width: 100px;
+      margin-right: 10px;
+      margin-bottom: 10px;
+    }
+  }
+}

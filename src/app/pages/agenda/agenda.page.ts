@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { RegistrationFormComponent } from 'src/app/components/registration-form/registration-form.component';
 import { PayloadRegistrationForm, PurchaseModel } from 'src/app/utils/types/purchaseType';
+import { Storage } from '@capacitor/storage';
 
 @Component({
   selector: 'app-agenda',
@@ -9,47 +10,15 @@ import { PayloadRegistrationForm, PurchaseModel } from 'src/app/utils/types/purc
   styleUrls: ['./agenda.page.scss'],
 })
 export class AgendaPage implements OnInit {
-  public compras: PurchaseModel[] = [
-    {
-      title: 'Monitor',
-      value: 26150,
-      isPaid: true,
-      isLate: false,
-      installments: 3,
-    },
-    {
-      title: 'Celular',
-      value: 126150,
-      isPaid: false,
-      isLate: false,
-      installments: 2,
-    },
-    {
-      title: 'Fatura do nubank',
-      value: 80000,
-      isPaid: true,
-      isLate: false,
-      installments: 1,
-    },
-    {
-      title: 'Despesas da casa',
-      value: 70000,
-      isPaid: false,
-      isLate: true,
-      installments: 3,
-    },
-    {
-      title: 'Portão',
-      value: 9786,
-      isPaid: false,
-      isLate: false,
-      installments: 1,
-    },
-  ];
+  public purchases: PurchaseModel[] = [];
 
   constructor(private modalCtrl: ModalController) {}
 
-  ngOnInit() {}
+  async ngOnInit() {
+    const { value } = await Storage.get({ key: 'purchases' });
+    this.purchases = JSON.parse(value);
+    console.log('this.purchases: ', this.purchases);
+  }
 
   async addNewPurchase() {
     const modal = await this.modalCtrl.create({
@@ -65,10 +34,16 @@ export class AgendaPage implements OnInit {
       value: payload.purchaseValue,
       installments: payload.purchaseInstallments,
       title: payload.purchaseTitle,
+      buyer: payload.personWhoIsBuying,
       isLate: false,
       isPaid: false,
     };
 
-    this.compras.push(newPurchase);
+    this.purchases.push(newPurchase);
+
+    await Storage.set({
+      key: 'purchases',
+      value: JSON.stringify(this.purchases),
+    });
   }
 }
