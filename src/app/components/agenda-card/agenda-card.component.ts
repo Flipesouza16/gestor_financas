@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { mascaraMoedaReal } from 'src/app/utils/utils';
+import PurchaseUtils from '../../utils/purchaseUtils';
 
 @Component({
   selector: 'app-agenda-card',
@@ -14,12 +15,17 @@ export class AgendaCardComponent implements OnInit {
   @Input() purchaseInstallments: number;
   @Input() buyer: string;
 
+  purchaseUtils = PurchaseUtils;
+
   purchaseValueFormatted: string;
   mascaraMoedaReal = mascaraMoedaReal;
 
   constructor() {}
 
   ngOnInit() {
-    this.purchaseValueFormatted = String(this.purchaseValue);
+    this.purchaseValueFormatted =
+      this.purchaseUtils.formatvalueAccordingToTheAmountOfZerosAtTheEnd(
+        String(this.purchaseValue)
+      );
   }
 }

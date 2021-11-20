@@ -1,6 +1,7 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Adicionar Nova Compra</ion-title>
+    <ion-title *ngIf="!isEditing">Adicionar Nova Compra</ion-title>
+    <ion-title *ngIf="isEditing">Atualizar Compra</ion-title>
     <ion-buttons slot="end">
       <ion-button (click)="dismiss()">
         <ion-icon name="close" slot="icon-only"></ion-icon>
@@ -21,6 +22,7 @@
         <ion-item>
           <ion-label position="floating">Título da Compra</ion-label>
           <ion-input
+            [value]="payloadRegistrationForm.purchaseTitle"
             [(ngModel)]="payloadRegistrationForm.purchaseTitle"
           ></ion-input>
         </ion-item>
@@ -45,6 +47,7 @@
           <ion-label>Quantas parcelas?</ion-label>
           <ion-select
             interface="popover"
+            [value]="payloadRegistrationForm.purchaseInstallments"
             (ionChange)="getInstallments($event)"
           >
             <ion-select-option [checked]="true" value="1">1x</ion-select-option>
@@ -72,8 +75,11 @@
       expand="full"
       shape="round"
       fill="outline"
-      (click)="addNewPurchase()"
-      >Adicionar Compra</ion-button
+      (click)="addNewOrEditPurchase()"
+      >
+        <span *ngIf="!isEditing">Adicionar Compra</span>
+        <span *ngIf="isEditing">Atualizar Compra</span>
+      </ion-button
     >
   </ion-toolbar>
 </ion-footer>

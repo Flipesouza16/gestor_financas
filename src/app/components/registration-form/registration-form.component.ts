@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { UtilsService } from 'src/app/services/utils/utils.service';
-import { PayloadRegistrationForm } from 'src/app/utils/types/purchaseType';
+import { PayloadRegistrationForm, PurchaseModel } from 'src/app/utils/types/purchaseType';
 import { mascaraMoedaReal } from '../../utils/utils';
+import  PurchaseUtils from 'src/app/utils/purchaseUtils';
 
 @Component({
   selector: 'app-registration-form',
@@ -11,6 +12,9 @@ import { mascaraMoedaReal } from '../../utils/utils';
 })
 export class RegistrationFormComponent implements OnInit {
   mascaraMoedaReal = mascaraMoedaReal;
+  purchaseUtils = PurchaseUtils;
+  isEditing = false;
+  payloadPurchase: PurchaseModel;
   purchaseValueFormatted = '';
   payloadRegistrationForm: PayloadRegistrationForm = {
     personWhoIsBuying: '',
@@ -21,18 +25,41 @@ export class RegistrationFormComponent implements OnInit {
 
   constructor(
     private modalCtrl: ModalController,
-    private utilsCtrl: UtilsService,
+    private utilsCtrl: UtilsService
   ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    if (this.isEditing) {
+      this.payloadRegistrationForm = this.purchaseUtils.adapterPurchaseData({
+        payloadPurchaseModel: this.payloadPurchase,
+      }) as PayloadRegistrationForm;
 
-  async addNewPurchase() {
+      this.purchaseValueFormatted =
+        this.purchaseUtils.formatvalueAccordingToTheAmountOfZerosAtTheEnd(
+          String(this.payloadRegistrationForm.purchaseValue)
+        );
+
+      console.log(
+        'this.payloadRegistrationForm: ',
+        this.payloadRegistrationForm
+      );
+    }
+  }
+
+  async addNewOrEditPurchase() {
     console.log('payloadRegistrationForm: ', this.payloadRegistrationForm);
     const isAllValidFields = await this.isValidField(
       this.payloadRegistrationForm
     );
     if (isAllValidFields) {
-      await this.utilsCtrl.showToast('Produto adicionado com sucesso!');
+      if (this.isEditing) {
+        await this.utilsCtrl.showToast('Produto atualizado com sucesso!');
+      } else {
+        await this.utilsCtrl.showToast('Produto adicionado com sucesso!');
+      }
+
+      console.log('this.purchaseValueFormatted: ', this.purchaseValueFormatted);
+
       setTimeout(() => {
         this.dismiss(this.payloadRegistrationForm);
       }, 1500);

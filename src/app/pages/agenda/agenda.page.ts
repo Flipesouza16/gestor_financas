@@ -1,23 +1,29 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { RegistrationFormComponent } from 'src/app/components/registration-form/registration-form.component';
-import { PayloadRegistrationForm, PurchaseModel } from 'src/app/utils/types/purchaseType';
+import {
+  PayloadRegistrationForm,
+  PurchaseModel,
+} from 'src/app/utils/types/purchaseType';
 import { Storage } from '@capacitor/storage';
-
+import PurchaseUtils from '../../utils/purchaseUtils';
 @Component({
   selector: 'app-agenda',
   templateUrl: './agenda.page.html',
   styleUrls: ['./agenda.page.scss'],
 })
 export class AgendaPage implements OnInit {
-  public purchases: PurchaseModel[] = [];
+  purchaseUtils = PurchaseUtils;
+  purchases: PurchaseModel[] = [];
 
   constructor(private modalCtrl: ModalController) {}
 
   async ngOnInit() {
     const { value } = await Storage.get({ key: 'purchases' });
-    this.purchases = JSON.parse(value);
-    console.log('this.purchases: ', this.purchases);
+    if (value) {
+      this.purchases = JSON.parse(value);
+      console.log('this.purchases: ', this.purchases);
+    }
   }
 
   async addNewPurchase() {
@@ -28,22 +34,53 @@ export class AgendaPage implements OnInit {
     await modal.present();
 
     const { data } = await modal.onDidDismiss();
-    const payload = data as PayloadRegistrationForm;
+    console.log('data: ', data);
 
-    const newPurchase: PurchaseModel = {
-      value: payload.purchaseValue,
-      installments: payload.purchaseInstallments,
-      title: payload.purchaseTitle,
-      buyer: payload.personWhoIsBuying,
-      isLate: false,
-      isPaid: false,
-    };
+    if (data) {
+      const newPurchase = this.purchaseUtils.adapterPurchaseData({
+        payloadPurchaseRegistration: data,
+      }) as PurchaseModel;
 
-    this.purchases.push(newPurchase);
+      console.log('newPurchase: ', newPurchase);
 
-    await Storage.set({
-      key: 'purchases',
-      value: JSON.stringify(this.purchases),
+      this.purchases.push(newPurchase);
+
+      await Storage.set({
+        key: 'purchases',
+        value: JSON.stringify(this.purchases),
+      });
+    }
+  }
+
+  async editPurchase(payloadPurchase: PurchaseModel) {
+    console.log('payloadPurchase: ', payloadPurchase);
+
+    const indexPurchase = this.purchases.indexOf(payloadPurchase);
+    console.log('indexPurchase: ', indexPurchase);
+
+    const modal = await this.modalCtrl.create({
+      component: RegistrationFormComponent,
+      componentProps: {
+        isEditing: true,
+        payloadPurchase,
+      },
     });
+
+    await modal.present();
+
+    const { data } = await modal.onDidDismiss();
+    if (data) {
+      const payload = this.purchaseUtils.adapterPurchaseData({
+        payloadPurchaseRegistration: data,
+      }) as PurchaseModel;
+
+      console.log('payload: ', payload);
+      this.purchases[indexPurchase] = payload;
+
+      await Storage.set({
+        key: 'purchases',
+        value: JSON.stringify(this.purchases),
+      });
+    }
   }
 }
