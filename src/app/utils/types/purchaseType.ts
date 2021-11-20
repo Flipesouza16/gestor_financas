@@ -11,4 +11,5 @@ export type PurchaseModel = {
   isPaid: boolean;
   isLate: boolean;
   installments: number;
+  buyer: string;
 };
