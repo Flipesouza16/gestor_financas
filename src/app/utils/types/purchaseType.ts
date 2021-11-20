@@ -13,3 +13,8 @@ export type PurchaseModel = {
   installments: number;
   buyer: string;
 };
+
+export type AdapterPurchase = {
+  payloadPurchaseRegistration?: PayloadRegistrationForm;
+  payloadPurchaseModel?: PurchaseModel;
+};
