@@ -1,13 +1,15 @@
 export type PayloadRegistrationForm = {
   purchaseTitle: string;
   purchaseValue: number;
+  installmentAmount: number;
   personWhoIsBuying: string;
   purchaseInstallments: number;
 };
 
 export type PurchaseModel = {
   title: string;
-  value: number;
+  totalValue: number;
+  installmentAmount: number;
   isPaid: boolean;
   isLate: boolean;
   installments: number;

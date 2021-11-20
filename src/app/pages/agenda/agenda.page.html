@@ -9,7 +9,7 @@
     <ion-item-sliding color="danger" *ngFor="let purchase of purchases">
       <app-agenda-card
         [purchaseTitle]="purchase.title"
-        [purchaseValue]="purchase.value"
+        [purchaseValue]="purchase.installmentAmount"
         [buyer]="purchase.buyer"
         [isPurchasePaid]="purchase.isPaid"
         [isLatePurchasePayment]="purchase.isLate"

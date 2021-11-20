@@ -1,9 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { UtilsService } from 'src/app/services/utils/utils.service';
-import { PayloadRegistrationForm, PurchaseModel } from 'src/app/utils/types/purchaseType';
+import {
+  PayloadRegistrationForm,
+  PurchaseModel,
+} from 'src/app/utils/types/purchaseType';
 import { mascaraMoedaReal } from '../../utils/utils';
-import  PurchaseUtils from 'src/app/utils/purchaseUtils';
+import PurchaseUtils from 'src/app/utils/purchaseUtils';
 
 @Component({
   selector: 'app-registration-form',
@@ -21,6 +24,7 @@ export class RegistrationFormComponent implements OnInit {
     purchaseInstallments: 0,
     purchaseTitle: '',
     purchaseValue: 0,
+    installmentAmount: 0,
   };
 
   constructor(
@@ -58,7 +62,14 @@ export class RegistrationFormComponent implements OnInit {
         await this.utilsCtrl.showToast('Produto adicionado com sucesso!');
       }
 
-      console.log('this.purchaseValueFormatted: ', this.purchaseValueFormatted);
+      this.payloadRegistrationForm.installmentAmount =
+        this.payloadRegistrationForm.purchaseValue /
+        this.payloadRegistrationForm.purchaseInstallments;
+
+      this.payloadRegistrationForm.installmentAmount = Number(
+        this.payloadRegistrationForm.installmentAmount.toFixed(2)
+      );
+
 
       setTimeout(() => {
         this.dismiss(this.payloadRegistrationForm);
