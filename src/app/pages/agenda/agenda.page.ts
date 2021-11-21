@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
+import { AlertController, ModalController } from '@ionic/angular';
 import { RegistrationFormComponent } from 'src/app/components/registration-form/registration-form.component';
 import {
   PayloadRegistrationForm,
@@ -7,6 +7,7 @@ import {
 } from 'src/app/utils/types/purchaseType';
 import { Storage } from '@capacitor/storage';
 import PurchaseUtils from '../../utils/purchaseUtils';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 @Component({
   selector: 'app-agenda',
   templateUrl: './agenda.page.html',
@@ -16,7 +17,7 @@ export class AgendaPage implements OnInit {
   purchaseUtils = PurchaseUtils;
   purchases: PurchaseModel[] = [];
 
-  constructor(private modalCtrl: ModalController) {}
+  constructor(private modalCtrl: ModalController, private alertCtrl: AlertController, private utilsCtrl: UtilsService) {}
 
   async ngOnInit() {
     const { value } = await Storage.get({ key: 'purchases' });
@@ -45,10 +46,7 @@ export class AgendaPage implements OnInit {
 
       this.purchases.push(newPurchase);
 
-      await Storage.set({
-        key: 'purchases',
-        value: JSON.stringify(this.purchases),
-      });
+      await this.savePurchases();
     }
   }
 
@@ -77,10 +75,41 @@ export class AgendaPage implements OnInit {
       console.log('payload: ', payload);
       this.purchases[indexPurchase] = payload;
 
-      await Storage.set({
-        key: 'purchases',
-        value: JSON.stringify(this.purchases),
-      });
+      await this.savePurchases();
     }
+  }
+
+  async savePurchases() {
+    await Storage.set({
+      key: 'purchases',
+      value: JSON.stringify(this.purchases),
+    });
+  }
+
+  async removerPurchase(purchase: PurchaseModel) {
+    const alert = await this.alertCtrl.create({
+      header: 'Quer mesmo remover esta compra?',
+      buttons: [
+        {
+          text: 'Não',
+          role: 'cancel',
+        },
+        {
+          text: 'Sim',
+          handler: async () => {
+            console.log(
+              'this.purchases.indexOf(purchase): ',
+              this.purchases.indexOf(purchase)
+            );
+
+            this.purchases.splice(this.purchases.indexOf(purchase), 1);
+            this.utilsCtrl.showToast('Compra removida com sucesso!');
+            await this.savePurchases();
+          },
+        },
+      ],
+    });
+
+  await alert.present();
   }
 }
