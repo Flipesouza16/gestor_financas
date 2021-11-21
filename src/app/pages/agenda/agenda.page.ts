@@ -16,10 +16,16 @@ import { UtilsService } from 'src/app/services/utils/utils.service';
 export class AgendaPage implements OnInit {
   purchaseUtils = PurchaseUtils;
   purchases: PurchaseModel[] = [];
+  isAnInvoiceForTheNextMonth = false;
 
-  constructor(private modalCtrl: ModalController, private alertCtrl: AlertController, private utilsCtrl: UtilsService) {}
+  constructor(
+    private modalCtrl: ModalController,
+    private alertCtrl: AlertController,
+    private utilsCtrl: UtilsService
+  ) {}
 
   async ngOnInit() {
+    this.checkIfThereIsAnInvoiceForTheNextMonth();
     const { value } = await Storage.get({ key: 'purchases' });
     if (value) {
       this.purchases = JSON.parse(value);
@@ -80,6 +86,8 @@ export class AgendaPage implements OnInit {
   }
 
   async savePurchases() {
+    this.checkIfThereIsAnInvoiceForTheNextMonth();
+
     await Storage.set({
       key: 'purchases',
       value: JSON.stringify(this.purchases),
@@ -110,6 +118,14 @@ export class AgendaPage implements OnInit {
       ],
     });
 
-  await alert.present();
+    await alert.present();
+  }
+
+  checkIfThereIsAnInvoiceForTheNextMonth() {
+    for (const purchase of this.purchases) {
+      if (purchase.installments > 1) {
+        this.isAnInvoiceForTheNextMonth = true;
+      }
+    }
   }
 }
