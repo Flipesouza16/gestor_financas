@@ -16,6 +16,21 @@ export type PurchaseModel = {
   buyer: string;
 };
 
+export type AllPurchaseByMonth = {
+  january: PurchaseModel[];
+  february: PurchaseModel[];
+  march: PurchaseModel[];
+  april: PurchaseModel[];
+  may: PurchaseModel[];
+  june: PurchaseModel[];
+  july: PurchaseModel[];
+  august: PurchaseModel[];
+  september: PurchaseModel[];
+  october: PurchaseModel[];
+  november: PurchaseModel[];
+  december: PurchaseModel[];
+};
+
 export type AdapterPurchase = {
   payloadPurchaseRegistration?: PayloadRegistrationForm;
   payloadPurchaseModel?: PurchaseModel;
