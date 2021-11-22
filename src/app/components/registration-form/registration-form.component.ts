@@ -103,7 +103,7 @@ export class RegistrationFormComponent implements OnInit {
 
   getInstallments(event) {
     const installment = event.target.value;
-    this.payloadRegistrationForm.purchaseInstallments = installment;
+    this.payloadRegistrationForm.purchaseInstallments = Number(installment);
   }
 
   dismiss(value?: PayloadRegistrationForm) {

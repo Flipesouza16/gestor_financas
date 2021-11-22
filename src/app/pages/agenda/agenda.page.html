@@ -1,8 +1,12 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Agenda de Novembro</ion-title>
-    <ion-buttons slot="end">
-      <ion-button>
+    <ion-title>Agenda de {{ monthTranslatedNames[selectedMonth] }}</ion-title>
+    <ion-buttons>
+      <ion-button (click)="loadPreviousInvoices()" slot="start" *ngIf="isAnInvoiceForThePreviousMonth">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+        Anterior
+      </ion-button>
+      <ion-button (click)="loadNextInvoinces()" slot="end" *ngIf="isAnInvoiceForTheNextMonth">
         Próximo
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </ion-button>
@@ -12,7 +16,7 @@
 
 <ion-content>
   <ion-list lines="none">
-    <ion-item-sliding color="danger" *ngFor="let purchase of purchases">
+    <ion-item-sliding color="danger" *ngFor="let purchase of listPurchasesByMonth[selectedMonth]">
       <app-agenda-card
         [purchaseTitle]="purchase.title"
         [purchaseValue]="purchase.installmentAmount"
