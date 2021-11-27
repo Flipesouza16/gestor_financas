@@ -41,13 +41,14 @@ export const monthTranslatedNames = {
   december: 'Dezembro',
 };
 
-export const generateHash = () => {
+export const generateHash = (length = 16) => {
   const userCtrl = appInjector.get(UserService);
   const idUser = userCtrl.idUser;
 
   let retorno = '';
   const chars =
     'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-=_!#$*?~/';
+
   for (let i = 0; i < length; i++) {
     retorno += chars.charAt(Math.floor(Math.random() * chars.length));
   }

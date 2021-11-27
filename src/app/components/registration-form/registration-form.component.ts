@@ -7,6 +7,7 @@ import {
 } from 'src/app/utils/types/purchaseType';
 import { mascaraMoedaReal } from '../../utils/utils';
 import PurchaseUtils from 'src/app/utils/purchaseUtils';
+import { generateHash } from '../../utils/utils';
 
 @Component({
   selector: 'app-registration-form',
@@ -20,7 +21,7 @@ export class RegistrationFormComponent implements OnInit {
   payloadPurchase: PurchaseModel;
   purchaseValueFormatted = '';
   payloadRegistrationForm: PayloadRegistrationForm = {
-    hash: '',
+    hash: generateHash(),
     personWhoIsBuying: '',
     purchaseInstallments: 0,
     purchaseTitle: '',
