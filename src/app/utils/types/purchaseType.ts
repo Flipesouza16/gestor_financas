@@ -4,6 +4,7 @@ export type PayloadRegistrationForm = {
   installmentAmount: number;
   personWhoIsBuying: string;
   purchaseInstallments: number;
+  totalInstallments: number;
 };
 
 export type PurchaseModel = {
@@ -14,6 +15,7 @@ export type PurchaseModel = {
   isLate: boolean;
   installments: number;
   buyer: string;
+  totalInstallments: number;
 };
 
 export type AllPurchaseByMonth = {

@@ -25,6 +25,7 @@ export class RegistrationFormComponent implements OnInit {
     purchaseTitle: '',
     purchaseValue: 0,
     installmentAmount: 0,
+    totalInstallments: 0,
   };
 
   constructor(
@@ -62,6 +63,7 @@ export class RegistrationFormComponent implements OnInit {
         await this.utilsCtrl.showToast('Produto adicionado com sucesso!');
       }
 
+      // value of installments
       this.payloadRegistrationForm.installmentAmount =
         this.payloadRegistrationForm.purchaseValue /
         this.payloadRegistrationForm.purchaseInstallments;
@@ -70,6 +72,9 @@ export class RegistrationFormComponent implements OnInit {
         this.payloadRegistrationForm.installmentAmount.toFixed(2)
       );
 
+      //total installments
+      this.payloadRegistrationForm.totalInstallments =
+        this.payloadRegistrationForm.purchaseInstallments;
 
       setTimeout(() => {
         this.dismiss(this.payloadRegistrationForm);

@@ -57,8 +57,8 @@ export class AgendaPage implements OnInit {
   }
 
   async loadSaveData() {
-    this.nextMonthIndex = new Date().getMonth() + 1;
-    this.currentMonthIndex = this.nextMonthIndex;
+    this.currentMonthIndex = new Date().getMonth();
+    this.nextMonthIndex = this.currentMonthIndex + 1;
     this.currentMonth = monthNames[this.nextMonthIndex];
     this.nextMonth = monthNames[this.nextMonthIndex];
     this.selectedMonth = this.nextMonth;
@@ -90,27 +90,7 @@ export class AgendaPage implements OnInit {
       this.purchases.push(newPurchase);
       this.listPurchasesByMonth[this.currentMonth] = this.purchases;
 
-      if (newPurchase.installments > 1) {
-        let totalInstallments = newPurchase.installments;
-        let nextMonths = this.currentMonthIndex + 1;
-        while (totalInstallments > 1) {
-          const purchaseNextMonth = JSON.parse(
-            JSON.stringify(newPurchase)
-          ) as PurchaseModel;
-
-          totalInstallments--;
-          nextMonths++;
-          purchaseNextMonth.installments = totalInstallments;
-
-          if (nextMonths > 11) {
-            nextMonths = 0;
-          }
-
-          this.listPurchasesByMonth[monthNames[nextMonths]].push(
-            purchaseNextMonth
-          );
-        }
-      }
+      this.addInstallmentsPerMonth(newPurchase);
 
       console.log('this.listPurchasesByMonth: ', this.listPurchasesByMonth);
 
@@ -119,14 +99,32 @@ export class AgendaPage implements OnInit {
     }
   }
 
-  addInstallmentsPerMonth() {}
+  addInstallmentsPerMonth(newPurchase: PurchaseModel) {
+    if (newPurchase.installments > 1) {
+      let totalInstallments = newPurchase.installments;
+      let nextMonths = this.currentMonthIndex + 1;
+      while (totalInstallments > 1) {
+        const purchaseNextMonth = JSON.parse(
+          JSON.stringify(newPurchase)
+        ) as PurchaseModel;
+
+        totalInstallments--;
+        nextMonths++;
+        purchaseNextMonth.installments = totalInstallments;
+
+        if (nextMonths > 11) {
+          nextMonths = 0;
+        }
+
+        this.listPurchasesByMonth[monthNames[nextMonths]].push(
+          purchaseNextMonth
+        );
+      }
+    }
+  }
 
   async editPurchase(payloadPurchase: PurchaseModel) {
-    console.log('payloadPurchase: ', payloadPurchase);
-    console.log('this.listPurchasesByMonth: ', this.listPurchasesByMonth);
-
     const indexPurchase = this.purchases.indexOf(payloadPurchase);
-    console.log('indexPurchase: ', indexPurchase);
 
     const modal = await this.modalCtrl.create({
       component: RegistrationFormComponent,
@@ -144,11 +142,68 @@ export class AgendaPage implements OnInit {
         payloadPurchaseRegistration: data,
       }) as PurchaseModel;
 
-      this.purchases[indexPurchase] = payload;
-      this.listPurchasesByMonth[this.selectedMonth] = this.purchases;
-      this.ref.tick();
-      await this.savePurchases();
+      this.selectedMonth = monthNames[this.currentMonthIndex + 1];
+      this.isAnInvoiceForThePreviousMonth = false;
+      this.nextMonthIndex = this.currentMonthIndex + 1;
+
+      console.log('this.currentMonthIndex: ', this.currentMonthIndex);
+      console.log('this.nextMonthIndex: ', this.nextMonthIndex);
+
+
+      this.listPurchasesByMonth[monthNames[this.currentMonthIndex + 1]][
+        indexPurchase
+      ] = payload;
+
+      if (payloadPurchase.totalInstallments > 1) {
+        let totalInstallments = payloadPurchase.totalInstallments;
+        let nextMonths = this.currentMonthIndex + 1;
+        let isRemoveInstallment = false;
+
+        this.isAnInvoiceForTheNextMonth = true;
+
+        while (totalInstallments > 1) {
+          const purchaseNextMonth = JSON.parse(
+            JSON.stringify(payload)
+          ) as PurchaseModel;
+
+          totalInstallments--;
+          nextMonths++;
+
+          if (nextMonths > 11) {
+            nextMonths = 0;
+          }
+
+          const nextMonthInstallment = purchaseNextMonth.installments - 1;
+          purchaseNextMonth.installments = nextMonthInstallment;
+
+          if (isRemoveInstallment) {
+            this.removerInstallment(nextMonths, indexPurchase);
+          } else {
+            this.listPurchasesByMonth[monthNames[nextMonths]][indexPurchase] =
+              purchaseNextMonth;
+          }
+
+          if (nextMonthInstallment === 1) {
+            isRemoveInstallment = true;
+          }
+        }
+
+        console.log('this.listPurchasesByMonth: ', this.listPurchasesByMonth);
+
+        // this.ref.tick();
+        // await this.savePurchases();
+      }
     }
+  }
+
+  removerInstallment(nextMonths: number, indexPurchase: number) {
+    const valueInstallment =
+      this.listPurchasesByMonth[monthNames[nextMonths]][indexPurchase];
+    const index =
+      this.listPurchasesByMonth[monthNames[nextMonths]].indexOf(
+        valueInstallment
+      );
+    this.listPurchasesByMonth[monthNames[nextMonths]].splice(index, 1);
   }
 
   async savePurchases() {
@@ -177,6 +232,12 @@ export class AgendaPage implements OnInit {
             );
 
             this.purchases.splice(this.purchases.indexOf(purchase), 1);
+            this.listPurchasesByMonth[this.selectedMonth] = this.purchases;
+            console.log(
+              'this.listPurchasesByMonth: ',
+              this.listPurchasesByMonth
+            );
+
             this.utilsCtrl.showToast('Compra removida com sucesso!');
             await this.savePurchases();
           },
@@ -188,7 +249,6 @@ export class AgendaPage implements OnInit {
   }
 
   checkIfThereIsAnInvoiceForTheNextMonth() {
-
     this.isAnInvoiceForTheNextMonth = false;
     for (const purchase of this.listPurchasesByMonth[this.selectedMonth]) {
       console.log('purchase.installments: ', purchase.installments);
@@ -234,18 +294,19 @@ export class AgendaPage implements OnInit {
     }
 
     this.selectedMonth = monthNames[this.nextMonthIndex];
+    this.purchases = this.listPurchasesByMonth[this.selectedMonth];
     this.checkIfThereIsAnInvoiceForTheNextMonth();
   }
 
   loadPreviousInvoices() {
     this.isAnInvoiceForTheNextMonth = true;
-
     this.nextMonthIndex--;
     if (this.nextMonthIndex < 0) {
       this.nextMonthIndex = 11;
     }
 
     this.selectedMonth = monthNames[this.nextMonthIndex];
+    this.purchases = this.listPurchasesByMonth[this.selectedMonth];
     this.checkIfThereIsAnInvoiceForThePreviousMonth();
   }
 }

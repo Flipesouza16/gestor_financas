@@ -8,6 +8,7 @@ const adapterPurchaseData = ({ payloadPurchaseRegistration = null, payloadPurcha
       title: payloadPurchaseRegistration.purchaseTitle,
       buyer: payloadPurchaseRegistration.personWhoIsBuying,
       installmentAmount: payloadPurchaseRegistration.installmentAmount,
+      totalInstallments: payloadPurchaseRegistration.totalInstallments,
       isLate: false,
       isPaid: false,
     };
@@ -18,7 +19,8 @@ const adapterPurchaseData = ({ payloadPurchaseRegistration = null, payloadPurcha
       purchaseInstallments: payloadPurchaseModel.installments,
       purchaseTitle: payloadPurchaseModel.title,
       personWhoIsBuying: payloadPurchaseModel.buyer,
-      installmentAmount: payloadPurchaseModel.installmentAmount
+      installmentAmount: payloadPurchaseModel.installmentAmount,
+      totalInstallments: payloadPurchaseModel.totalInstallments,
     };
     return purchaseAdapted;
   }
