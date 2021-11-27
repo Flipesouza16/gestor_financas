@@ -142,13 +142,7 @@ export class AgendaPage implements OnInit {
         payloadPurchaseRegistration: data,
       }) as PurchaseModel;
 
-      this.selectedMonth = monthNames[this.currentMonthIndex + 1];
-      this.isAnInvoiceForThePreviousMonth = false;
-      this.nextMonthIndex = this.currentMonthIndex + 1;
-
-      console.log('this.currentMonthIndex: ', this.currentMonthIndex);
-      console.log('this.nextMonthIndex: ', this.nextMonthIndex);
-
+      this.backToStart(payloadPurchase);
 
       this.listPurchasesByMonth[monthNames[this.currentMonthIndex + 1]][
         indexPurchase
@@ -158,8 +152,6 @@ export class AgendaPage implements OnInit {
         let totalInstallments = payloadPurchase.totalInstallments;
         let nextMonths = this.currentMonthIndex + 1;
         let isRemoveInstallment = false;
-
-        this.isAnInvoiceForTheNextMonth = true;
 
         while (totalInstallments > 1) {
           const purchaseNextMonth = JSON.parse(
@@ -187,11 +179,8 @@ export class AgendaPage implements OnInit {
             isRemoveInstallment = true;
           }
         }
-
-        console.log('this.listPurchasesByMonth: ', this.listPurchasesByMonth);
-
-        // this.ref.tick();
-        // await this.savePurchases();
+        this.ref.tick();
+        await this.savePurchases();
       }
     }
   }
@@ -215,7 +204,7 @@ export class AgendaPage implements OnInit {
     });
   }
 
-  async removerPurchase(purchase: PurchaseModel) {
+  async removerPurchase(purchaseToRemove: PurchaseModel) {
     const alert = await this.alertCtrl.create({
       header: 'Quer mesmo remover esta compra?',
       buttons: [
@@ -228,15 +217,25 @@ export class AgendaPage implements OnInit {
           handler: async () => {
             console.log(
               'this.purchases.indexOf(purchase): ',
-              this.purchases.indexOf(purchase)
+              this.purchases.indexOf(purchaseToRemove)
             );
 
-            this.purchases.splice(this.purchases.indexOf(purchase), 1);
+            this.purchases.splice(this.purchases.indexOf(purchaseToRemove), 1);
             this.listPurchasesByMonth[this.selectedMonth] = this.purchases;
-            console.log(
-              'this.listPurchasesByMonth: ',
-              this.listPurchasesByMonth
-            );
+
+            const allPurchases = Object.values(this.listPurchasesByMonth);
+
+            for (const purchases of allPurchases) {
+              if (purchases.length) {
+                for (const purchase of purchases) {
+                  if (purchase.hash === purchaseToRemove.hash) {
+                    console.log('irei excluir este purchase: ', purchase);
+                    purchases.splice(purchases.indexOf(purchase), 1);
+                    this.backToStart(purchase);
+                  }
+                }
+              }
+            }
 
             this.utilsCtrl.showToast('Compra removida com sucesso!');
             await this.savePurchases();
@@ -246,6 +245,16 @@ export class AgendaPage implements OnInit {
     });
 
     await alert.present();
+  }
+
+  backToStart(purchase: PurchaseModel) {
+    this.selectedMonth = monthNames[this.currentMonthIndex + 1];
+    this.isAnInvoiceForThePreviousMonth = false;
+    this.nextMonthIndex = this.currentMonthIndex + 1;
+
+    if (purchase.totalInstallments > 1) {
+      this.isAnInvoiceForTheNextMonth = true;
+    }
   }
 
   checkIfThereIsAnInvoiceForTheNextMonth() {
