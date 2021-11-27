@@ -3,6 +3,7 @@ import { AdapterPurchase, PayloadRegistrationForm, PurchaseModel } from './types
 const adapterPurchaseData = ({ payloadPurchaseRegistration = null, payloadPurchaseModel = null, }: AdapterPurchase) => {
   if (payloadPurchaseRegistration) {
     const purchaseAdapted: PurchaseModel = {
+      hash: payloadPurchaseRegistration.hash,
       totalValue: payloadPurchaseRegistration.purchaseValue,
       installments: payloadPurchaseRegistration.purchaseInstallments,
       title: payloadPurchaseRegistration.purchaseTitle,
@@ -15,6 +16,7 @@ const adapterPurchaseData = ({ payloadPurchaseRegistration = null, payloadPurcha
     return purchaseAdapted;
   } else if (payloadPurchaseModel) {
     const purchaseAdapted: PayloadRegistrationForm = {
+      hash: payloadPurchaseModel.hash,
       purchaseValue: payloadPurchaseModel.totalValue,
       purchaseInstallments: payloadPurchaseModel.installments,
       purchaseTitle: payloadPurchaseModel.title,

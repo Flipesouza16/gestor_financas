@@ -1,3 +1,6 @@
+import { UserService } from '../services/user/user.service';
+import { appInjector } from './app-injector';
+
 export const mascaraMoedaReal = (moeda: any) => {
   let moedaFormatada = moeda.replace(/\D/g, '');
   moedaFormatada = (moedaFormatada / 100)
@@ -36,4 +39,18 @@ export const monthTranslatedNames = {
   october: 'Outubro',
   november: 'Novembro',
   december: 'Dezembro',
+};
+
+export const generateHash = () => {
+  const userCtrl = appInjector.get(UserService);
+  const idUser = userCtrl.idUser;
+
+  let retorno = '';
+  const chars =
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-=_!#$*?~/';
+  for (let i = 0; i < length; i++) {
+    retorno += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+
+  return retorno + '@' + idUser;
 };

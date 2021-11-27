@@ -1,4 +1,5 @@
 export type PayloadRegistrationForm = {
+  hash: string;
   purchaseTitle: string;
   purchaseValue: number;
   installmentAmount: number;
@@ -8,6 +9,7 @@ export type PayloadRegistrationForm = {
 };
 
 export type PurchaseModel = {
+  hash: string;
   title: string;
   totalValue: number;
   installmentAmount: number;

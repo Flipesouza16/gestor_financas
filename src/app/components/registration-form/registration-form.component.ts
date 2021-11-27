@@ -20,6 +20,7 @@ export class RegistrationFormComponent implements OnInit {
   payloadPurchase: PurchaseModel;
   purchaseValueFormatted = '';
   payloadRegistrationForm: PayloadRegistrationForm = {
+    hash: '',
     personWhoIsBuying: '',
     purchaseInstallments: 0,
     purchaseTitle: '',
