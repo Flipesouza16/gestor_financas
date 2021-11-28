@@ -150,6 +150,7 @@ export class AgendaPage implements OnInit {
 
       if (payloadPurchase.totalInstallments > 1) {
         let totalInstallments = payloadPurchase.totalInstallments;
+        let currentInstallment = payload.installments;
         let nextMonths = this.currentMonthIndex + 1;
 
         while (totalInstallments > 1) {
@@ -158,13 +159,14 @@ export class AgendaPage implements OnInit {
           ) as PurchaseModel;
 
           totalInstallments--;
+          currentInstallment--;
           nextMonths++;
 
           if (nextMonths > 11) {
             nextMonths = 0;
           }
 
-          const nextMonthInstallment = purchaseNextMonth.installments - 1;
+          const nextMonthInstallment = currentInstallment;
           purchaseNextMonth.installments = nextMonthInstallment;
 
           if (purchaseNextMonth.installments < 1) {
@@ -199,6 +201,7 @@ export class AgendaPage implements OnInit {
         }
       }
     }
+    this.checkIfThereIsAnInvoiceForTheNextMonth();
   }
 
   async savePurchases() {

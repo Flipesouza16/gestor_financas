@@ -18,7 +18,7 @@ const adapterPurchaseData = ({ payloadPurchaseRegistration = null, payloadPurcha
     const purchaseAdapted: PayloadRegistrationForm = {
       hash: payloadPurchaseModel.hash,
       purchaseValue: payloadPurchaseModel.totalValue,
-      purchaseInstallments: payloadPurchaseModel.installments,
+      purchaseInstallments: payloadPurchaseModel.totalInstallments,
       purchaseTitle: payloadPurchaseModel.title,
       personWhoIsBuying: payloadPurchaseModel.buyer,
       installmentAmount: payloadPurchaseModel.installmentAmount,
