@@ -151,7 +151,6 @@ export class AgendaPage implements OnInit {
       if (payloadPurchase.totalInstallments > 1) {
         let totalInstallments = payloadPurchase.totalInstallments;
         let nextMonths = this.currentMonthIndex + 1;
-        let isRemoveInstallment = false;
 
         while (totalInstallments > 1) {
           const purchaseNextMonth = JSON.parse(
@@ -168,31 +167,38 @@ export class AgendaPage implements OnInit {
           const nextMonthInstallment = purchaseNextMonth.installments - 1;
           purchaseNextMonth.installments = nextMonthInstallment;
 
-          if (isRemoveInstallment) {
-            this.removerInstallment(nextMonths, indexPurchase);
+          if (purchaseNextMonth.installments < 1) {
+            this.removerInstallment(
+              payloadPurchase.totalInstallments,
+              nextMonths,
+              purchaseNextMonth
+            );
           } else {
             this.listPurchasesByMonth[monthNames[nextMonths]][indexPurchase] =
               purchaseNextMonth;
           }
 
-          if (nextMonthInstallment === 1) {
-            isRemoveInstallment = true;
-          }
         }
-        this.ref.tick();
-        await this.savePurchases();
+
+        // this.ref.tick();
+        // await this.savePurchases();
       }
     }
   }
 
-  removerInstallment(nextMonths: number, indexPurchase: number) {
-    const valueInstallment =
-      this.listPurchasesByMonth[monthNames[nextMonths]][indexPurchase];
-    const index =
-      this.listPurchasesByMonth[monthNames[nextMonths]].indexOf(
-        valueInstallment
-      );
-    this.listPurchasesByMonth[monthNames[nextMonths]].splice(index, 1);
+  removerInstallment(
+    totalInstallment: number,
+    nextMonths: number,
+    purchaseNextMonth: PurchaseModel
+  ) {
+    for (let i = nextMonths; i <= totalInstallment; i++) {
+      for (const purchase of this.listPurchasesByMonth[monthNames[i]]) {
+        if (purchase.hash === purchaseNextMonth.hash) {
+          const indexPurchase = this.listPurchasesByMonth[monthNames[i]].indexOf(purchase);
+          this.listPurchasesByMonth[monthNames[i]].splice(indexPurchase, 1);
+        }
+      }
+    }
   }
 
   async savePurchases() {
