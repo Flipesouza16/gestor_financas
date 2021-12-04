@@ -59,6 +59,10 @@ export class AgendaPage implements OnInit {
   async loadSaveData() {
     this.currentMonthIndex = new Date().getMonth();
     this.nextMonthIndex = this.currentMonthIndex + 1;
+    if (this.nextMonthIndex > 11) {
+      this.nextMonthIndex = 0;
+    }
+
     this.currentMonth = monthNames[this.nextMonthIndex];
     this.nextMonth = monthNames[this.nextMonthIndex];
     this.selectedMonth = this.nextMonth;
