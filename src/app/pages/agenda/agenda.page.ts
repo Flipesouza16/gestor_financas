@@ -107,6 +107,11 @@ export class AgendaPage implements OnInit {
     if (newPurchase.installments > 1) {
       let totalInstallments = newPurchase.installments;
       let nextMonths = this.currentMonthIndex + 1;
+
+      if (nextMonths > 11) {
+        nextMonths = 0;
+      }
+
       while (totalInstallments > 1) {
         const purchaseNextMonth = JSON.parse(
           JSON.stringify(newPurchase)
@@ -183,7 +188,6 @@ export class AgendaPage implements OnInit {
             this.listPurchasesByMonth[monthNames[nextMonths]][indexPurchase] =
               purchaseNextMonth;
           }
-
         }
 
         // this.ref.tick();
@@ -200,7 +204,8 @@ export class AgendaPage implements OnInit {
     for (let i = nextMonths; i <= totalInstallment; i++) {
       for (const purchase of this.listPurchasesByMonth[monthNames[i]]) {
         if (purchase.hash === purchaseNextMonth.hash) {
-          const indexPurchase = this.listPurchasesByMonth[monthNames[i]].indexOf(purchase);
+          const indexPurchase =
+            this.listPurchasesByMonth[monthNames[i]].indexOf(purchase);
           this.listPurchasesByMonth[monthNames[i]].splice(indexPurchase, 1);
         }
       }
@@ -290,7 +295,7 @@ export class AgendaPage implements OnInit {
       this.selectedMonth = monthNames[this.nextMonthIndex];
 
       let aux = this.nextMonthIndex - 1;
-      if (aux <= 0) {
+      if (aux < 0) {
         aux = 11;
       }
 
