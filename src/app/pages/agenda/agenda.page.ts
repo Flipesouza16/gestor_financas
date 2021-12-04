@@ -3,7 +3,6 @@ import { AlertController, ModalController } from '@ionic/angular';
 import { RegistrationFormComponent } from 'src/app/components/registration-form/registration-form.component';
 import {
   AllPurchaseByMonth,
-  PayloadRegistrationForm,
   PurchaseModel,
 } from 'src/app/utils/types/purchaseType';
 import { Storage } from '@capacitor/storage';
@@ -125,9 +124,11 @@ export class AgendaPage implements OnInit {
           nextMonths = 0;
         }
 
-        this.listPurchasesByMonth[monthNames[nextMonths]].push(
-          purchaseNextMonth
-        );
+        const currentMonth = monthNames[nextMonths];
+
+        purchaseNextMonth.month = currentMonth;
+
+        this.listPurchasesByMonth[currentMonth].push(purchaseNextMonth);
       }
     }
   }
@@ -153,28 +154,31 @@ export class AgendaPage implements OnInit {
 
       this.backToStart(payloadPurchase);
 
-      this.listPurchasesByMonth[monthNames[this.currentMonthIndex + 1]][
+      payload.month = monthNames[this.nextMonthIndex];
+
+      this.listPurchasesByMonth[monthNames[this.nextMonthIndex]][
         indexPurchase
       ] = payload;
 
       if (payloadPurchase.totalInstallments > 1) {
         let totalInstallments = payloadPurchase.totalInstallments;
         let currentInstallment = payload.installments;
-        let nextMonths = this.currentMonthIndex + 1;
+        let nextMonths = this.nextMonthIndex;
 
         while (totalInstallments > 1) {
           const purchaseNextMonth = JSON.parse(
             JSON.stringify(payload)
-          ) as PurchaseModel;
+            ) as PurchaseModel;
 
           totalInstallments--;
-          currentInstallment--;
-          nextMonths++;
+            currentInstallment--;
+            nextMonths++;
 
           if (nextMonths > 11) {
             nextMonths = 0;
           }
 
+          purchaseNextMonth.month = monthNames[nextMonths];
           const nextMonthInstallment = currentInstallment;
           purchaseNextMonth.installments = nextMonthInstallment;
 
@@ -266,9 +270,13 @@ export class AgendaPage implements OnInit {
   }
 
   backToStart(purchase: PurchaseModel) {
-    this.selectedMonth = monthNames[this.currentMonthIndex + 1];
-    this.isAnInvoiceForThePreviousMonth = false;
     this.nextMonthIndex = this.currentMonthIndex + 1;
+    this.isAnInvoiceForThePreviousMonth = false;
+
+    if (this.nextMonthIndex > 11) {
+      this.nextMonthIndex = 0;
+    }
+    this.selectedMonth = monthNames[this.nextMonthIndex];
 
     if (purchase.totalInstallments > 1) {
       this.isAnInvoiceForTheNextMonth = true;

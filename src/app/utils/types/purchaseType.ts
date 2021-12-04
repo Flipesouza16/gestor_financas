@@ -18,6 +18,7 @@ export type PurchaseModel = {
   installments: number;
   buyer: string;
   totalInstallments: number;
+  month?: string;
 };
 
 export type AllPurchaseByMonth = {
