@@ -49,10 +49,6 @@ export class AgendaPage implements OnInit {
 
   async ngOnInit() {
     await this.loadSaveData();
-    console.log('this.selectedMonth: ', this.selectedMonth);
-    console.log('this.listPurchasesByMonth: ', this.listPurchasesByMonth);
-    console.log('this.nextMonthIndex: ', this.nextMonthIndex);
-    // console.log('The current month is ', this.currentMonthName);
   }
 
   async loadSaveData() {
@@ -70,7 +66,6 @@ export class AgendaPage implements OnInit {
     if (value) {
       this.listPurchasesByMonth = JSON.parse(value);
       this.purchases = this.listPurchasesByMonth[this.selectedMonth];
-      console.log('this.listPurchasesByMonth: ', this.listPurchasesByMonth);
     }
     this.checkIfThereIsAnInvoiceForTheNextMonth();
   }
@@ -88,14 +83,11 @@ export class AgendaPage implements OnInit {
         payloadPurchaseRegistration: data,
       }) as PurchaseModel;
 
-      console.log('newPurchase: ', newPurchase);
-
       this.purchases.push(newPurchase);
+
       this.listPurchasesByMonth[this.currentMonth] = this.purchases;
 
       this.addInstallmentsPerMonth(newPurchase);
-
-      console.log('this.listPurchasesByMonth: ', this.listPurchasesByMonth);
 
       this.ref.tick();
       await this.savePurchases();
@@ -156,23 +148,37 @@ export class AgendaPage implements OnInit {
 
       payload.month = monthNames[this.nextMonthIndex];
 
-      this.listPurchasesByMonth[monthNames[this.nextMonthIndex]][
-        indexPurchase
-      ] = payload;
+      const { indexPurchaseList, isPurchaseExist } =
+        this.checkIndexPurchaseOfList(payloadPurchase);
 
-      if (payloadPurchase.totalInstallments > 1) {
-        let totalInstallments = payloadPurchase.totalInstallments;
+      if (isPurchaseExist) {
+        this.listPurchasesByMonth[monthNames[this.nextMonthIndex]][
+          indexPurchaseList
+        ] = payload;
+      }
+
+      if (
+        payloadPurchase.totalInstallments > 1 ||
+        payload.totalInstallments > payloadPurchase.totalInstallments
+      ) {
+        const isInstallmentsOfUpdatedGreaterThanPreviousOne =
+          payload.totalInstallments > payloadPurchase.totalInstallments;
+
+        let totalInstallments = isInstallmentsOfUpdatedGreaterThanPreviousOne
+          ? payload.totalInstallments
+          : payloadPurchase.totalInstallments;
+
         let currentInstallment = payload.installments;
         let nextMonths = this.nextMonthIndex;
 
         while (totalInstallments > 1) {
           const purchaseNextMonth = JSON.parse(
             JSON.stringify(payload)
-            ) as PurchaseModel;
+          ) as PurchaseModel;
 
           totalInstallments--;
-            currentInstallment--;
-            nextMonths++;
+          currentInstallment--;
+          nextMonths++;
 
           if (nextMonths > 11) {
             nextMonths = 0;
@@ -189,15 +195,51 @@ export class AgendaPage implements OnInit {
               purchaseNextMonth
             );
           } else {
-            this.listPurchasesByMonth[monthNames[nextMonths]][indexPurchase] =
-              purchaseNextMonth;
+            const {
+              indexPurchaseList: indexPurchaseListAux,
+              isPurchaseExist: isPurchaseExistAux
+            } = this.checkIndexPurchaseOfList(payloadPurchase, nextMonths);
+
+            if (isPurchaseExistAux) {
+              this.listPurchasesByMonth[monthNames[nextMonths]][
+                indexPurchaseListAux
+              ] = purchaseNextMonth;
+            } else {
+              this.listPurchasesByMonth[monthNames[nextMonths]].push(
+                purchaseNextMonth
+              );
+            }
           }
         }
 
-        // this.ref.tick();
-        // await this.savePurchases();
+        this.ref.tick();
+        await this.savePurchases();
       }
     }
+  }
+
+  checkIndexPurchaseOfList(payloadPurchase, nextMonths?) {
+    let isPurchaseExist = false;
+    let indexPurchaseList;
+
+    const nextMonthIndex = nextMonths ? nextMonths : this.nextMonthIndex;
+
+    for (const purchaseOfList of this.listPurchasesByMonth[
+      monthNames[nextMonthIndex]
+    ]) {
+      if (purchaseOfList.hash === payloadPurchase.hash) {
+        isPurchaseExist = true;
+        indexPurchaseList =
+          this.listPurchasesByMonth[monthNames[nextMonthIndex]].indexOf(
+            purchaseOfList
+          );
+      }
+    }
+
+    return {
+      isPurchaseExist,
+      indexPurchaseList,
+    };
   }
 
   removerInstallment(
@@ -237,11 +279,6 @@ export class AgendaPage implements OnInit {
         {
           text: 'Sim',
           handler: async () => {
-            console.log(
-              'this.purchases.indexOf(purchase): ',
-              this.purchases.indexOf(purchaseToRemove)
-            );
-
             this.purchases.splice(this.purchases.indexOf(purchaseToRemove), 1);
             this.listPurchasesByMonth[this.selectedMonth] = this.purchases;
 
@@ -251,7 +288,6 @@ export class AgendaPage implements OnInit {
               if (purchases.length) {
                 for (const purchase of purchases) {
                   if (purchase.hash === purchaseToRemove.hash) {
-                    console.log('irei excluir este purchase: ', purchase);
                     purchases.splice(purchases.indexOf(purchase), 1);
                     this.backToStart(purchase);
                   }
@@ -285,8 +321,8 @@ export class AgendaPage implements OnInit {
 
   checkIfThereIsAnInvoiceForTheNextMonth() {
     this.isAnInvoiceForTheNextMonth = false;
+
     for (const purchase of this.listPurchasesByMonth[this.selectedMonth]) {
-      console.log('purchase.installments: ', purchase.installments);
       if (purchase.installments > 1) {
         this.isAnInvoiceForTheNextMonth = true;
         break;
