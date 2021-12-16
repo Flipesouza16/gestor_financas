@@ -1,3 +1,22 @@
+
+ion-header {
+  ion-toolbar {
+    padding: 10px;
+
+    ion-buttons {
+      justify-content:
+      space-between;
+      margin-top: 10px;
+
+      .endForSure {
+        margin-left: 68%;
+        right: 0;
+      }
+    }
+  }
+}
+
+
 ion-list {
   background-color: transparent;
 

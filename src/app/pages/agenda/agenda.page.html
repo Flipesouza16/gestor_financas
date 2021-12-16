@@ -6,7 +6,7 @@
         <ion-icon name="chevron-back-outline"></ion-icon>
         Anterior
       </ion-button>
-      <ion-button (click)="loadNextInvoinces()" slot="end" *ngIf="isAnInvoiceForTheNextMonth">
+      <ion-button [ngClass]="!isAnInvoiceForThePreviousMonth && 'endForSure'" (click)="loadNextInvoinces()" slot="end" *ngIf="isAnInvoiceForTheNextMonth">
         Próximo
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </ion-button>
