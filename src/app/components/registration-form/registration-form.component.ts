@@ -108,11 +108,6 @@ export class RegistrationFormComponent implements OnInit {
     return true;
   }
 
-  getInstallments(event) {
-    const installment = event.target.value;
-    this.payloadRegistrationForm.purchaseInstallments = Number(installment);
-  }
-
   dismiss(value?: PayloadRegistrationForm) {
     this.modalCtrl.dismiss(value);
   }

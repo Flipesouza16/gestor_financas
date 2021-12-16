@@ -32,7 +32,7 @@
             <b *ngIf="purchaseValueFormatted.length">R$</b> &nbsp;
             <ion-input
               placeholder="0,00"
-              [value]="mascaraMoedaReal(purchaseValueFormatted)"
+              [value]="purchaseValueFormatted ? mascaraMoedaReal(purchaseValueFormatted) : ''"
               (ionChange)="formatValue($event)"
             ></ion-input>
           </div>
@@ -47,10 +47,9 @@
           <ion-label>Quantas parcelas?</ion-label>
           <ion-select
             interface="popover"
-            [value]="payloadRegistrationForm.purchaseInstallments"
-            (ionChange)="getInstallments($event)"
+            [(ngModel)]="payloadRegistrationForm.purchaseInstallments"
           >
-            <ion-select-option [checked]="true" value="1">1x</ion-select-option>
+            <ion-select-option checked="true" value="1">1x</ion-select-option>
             <ion-select-option value="2">2x</ion-select-option>
             <ion-select-option value="3">3x</ion-select-option>
             <ion-select-option value="4">4x</ion-select-option>
