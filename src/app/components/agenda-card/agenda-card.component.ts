@@ -24,8 +24,8 @@ export class AgendaCardComponent implements OnInit {
 
   ngOnInit() {
     this.purchaseValueFormatted =
-      this.purchaseUtils.formatvalueAccordingToTheAmountOfZerosAtTheEnd(
-        String(this.purchaseValue)
+    this.purchaseUtils.formatvalueAccordingToTheAmountOfZerosAtTheEnd(
+      String(this.purchaseValue)
       );
   }
 }

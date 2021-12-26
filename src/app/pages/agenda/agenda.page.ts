@@ -65,7 +65,10 @@ export class AgendaPage implements OnInit {
     const { value } = await Storage.get({ key: 'list-purchases-by-month' });
     if (value) {
       this.listPurchasesByMonth = JSON.parse(value);
-      this.purchases = this.listPurchasesByMonth[this.selectedMonth];
+
+      this.purchases = JSON.parse(
+        JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
+      );
     }
     this.checkIfThereIsAnInvoiceForTheNextMonth();
   }
@@ -83,10 +86,10 @@ export class AgendaPage implements OnInit {
         payloadPurchaseRegistration: data,
       }) as PurchaseModel;
 
+      this.backToStart(newPurchase);
       this.purchases.push(newPurchase);
 
       this.listPurchasesByMonth[this.currentMonth] = this.purchases;
-
       this.addInstallmentsPerMonth(newPurchase);
 
       this.ref.tick();
@@ -126,8 +129,6 @@ export class AgendaPage implements OnInit {
   }
 
   async editPurchase(payloadPurchase: PurchaseModel) {
-    const indexPurchase = this.purchases.indexOf(payloadPurchase);
-
     const modal = await this.modalCtrl.create({
       component: RegistrationFormComponent,
       componentProps: {
@@ -314,6 +315,10 @@ export class AgendaPage implements OnInit {
     }
     this.selectedMonth = monthNames[this.nextMonthIndex];
 
+    this.purchases = JSON.parse(
+      JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
+    );
+
     if (purchase.totalInstallments > 1) {
       this.isAnInvoiceForTheNextMonth = true;
     }
@@ -365,7 +370,7 @@ export class AgendaPage implements OnInit {
     }
 
     this.selectedMonth = monthNames[this.nextMonthIndex];
-    this.purchases = this.listPurchasesByMonth[this.selectedMonth];
+    this.purchases = JSON.parse(JSON.stringify(this.listPurchasesByMonth[this.selectedMonth]));
     this.checkIfThereIsAnInvoiceForTheNextMonth();
   }
 
@@ -377,7 +382,7 @@ export class AgendaPage implements OnInit {
     }
 
     this.selectedMonth = monthNames[this.nextMonthIndex];
-    this.purchases = this.listPurchasesByMonth[this.selectedMonth];
+    this.purchases = JSON.parse(JSON.stringify(this.listPurchasesByMonth[this.selectedMonth]));
     this.checkIfThereIsAnInvoiceForThePreviousMonth();
   }
 }
