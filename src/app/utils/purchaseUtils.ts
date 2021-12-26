@@ -1,4 +1,5 @@
 import { AdapterPurchase, PayloadRegistrationForm, PurchaseModel } from './types/purchaseType';
+import { mascaraMoedaReal } from './utils';
 
 const adapterPurchaseData = ({ payloadPurchaseRegistration = null, payloadPurchaseModel = null, }: AdapterPurchase) => {
   if (payloadPurchaseRegistration) {
@@ -31,22 +32,52 @@ const adapterPurchaseData = ({ payloadPurchaseRegistration = null, payloadPurcha
 const formatvalueAccordingToTheAmountOfZerosAtTheEnd = (
   purchaseValueFormatted: string
 ) => {
-  const numbersSplitByDot = purchaseValueFormatted.split('.');
-  const zeros = purchaseValueFormatted.slice(-2);
-  const listZeros = zeros.split('');
 
-  if (
-    (listZeros[0] === '0' && listZeros[1] === '0') ||
-    purchaseValueFormatted
-  .length === 3) {
-    purchaseValueFormatted = purchaseValueFormatted + '00';
-  } else if (
-    listZeros[1] === '0' ||
-    (purchaseValueFormatted.includes('.') &&
-      numbersSplitByDot[0].length === 2 &&
-      numbersSplitByDot[1].length === 1)
-  ) {
-    purchaseValueFormatted = purchaseValueFormatted + '0';
+  console.log('antes purchaseValueFormatted: ', purchaseValueFormatted.replace('.', ','));
+
+  const currentValue = purchaseValueFormatted.replace('.', ',');
+  const valueWithMask = mascaraMoedaReal(purchaseValueFormatted);
+
+  console.log('currentValue: ', Number(currentValue));
+  console.log('valueWithMask: ', valueWithMask);
+
+  let newPurchaseValue = purchaseValueFormatted;
+  let isValueCorrect = false;
+
+  if (currentValue === valueWithMask) {
+    isValueCorrect = true;
+  } else {
+    isValueCorrect = false;
+  }
+
+  console.log('isValueCorrect: ', isValueCorrect);
+
+  let valueTemp = mascaraMoedaReal(purchaseValueFormatted).replace(',', '.');
+  console.log('valueTemp: ', valueTemp);
+  let valueToCompare;
+
+  while (!isValueCorrect) {
+    valueTemp = valueTemp + '0';
+    newPurchaseValue = newPurchaseValue + '0';
+    valueToCompare = Number(mascaraMoedaReal(valueTemp).replace(',', '.'));
+    const currentValueWithMask = mascaraMoedaReal(valueTemp);
+
+    let [valueFormatted] = currentValueWithMask.replace('.', '').split(',');
+    valueFormatted = Number(valueFormatted);
+
+    if (valueFormatted === Number(purchaseValueFormatted)) {
+      valueToCompare = valueFormatted;
+    }
+
+    if (valueToCompare === Number(purchaseValueFormatted)) {
+      isValueCorrect = true;
+    } else {
+      isValueCorrect = false;
+    }
+  }
+
+  if (isValueCorrect) {
+    purchaseValueFormatted = newPurchaseValue;
   }
   return purchaseValueFormatted;
 };
