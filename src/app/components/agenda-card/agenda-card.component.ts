@@ -1,4 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AlertController } from '@ionic/angular';
 import { mascaraMoedaReal } from 'src/app/utils/utils';
 import PurchaseUtils from '../../utils/purchaseUtils';
 
@@ -15,17 +16,40 @@ export class AgendaCardComponent implements OnInit {
   @Input() purchaseInstallments: number;
   @Input() buyer: string;
 
+  @Output() paid = new EventEmitter();
+
   purchaseUtils = PurchaseUtils;
 
   purchaseValueFormatted: string;
   mascaraMoedaReal = mascaraMoedaReal;
 
-  constructor() {}
+  constructor(private alertCtrl: AlertController) {}
 
   ngOnInit() {
     this.purchaseValueFormatted =
-    this.purchaseUtils.formatvalueAccordingToTheAmountOfZerosAtTheEnd(
-      String(this.purchaseValue)
+      this.purchaseUtils.formatvalueAccordingToTheAmountOfZerosAtTheEnd(
+        String(this.purchaseValue)
       );
+  }
+
+  async pay() {
+    const alert = await this.alertCtrl.create({
+      cssClass: 'my-custom-class',
+      header: 'Já pagou essa parcela?',
+      buttons: [
+        {
+          text: 'Não',
+          role: 'cancel',
+        },
+        {
+          text: 'Sim',
+          handler: () => {
+            this.paid.emit(true);
+          },
+        },
+      ],
+    });
+
+    await alert.present();
   }
 }

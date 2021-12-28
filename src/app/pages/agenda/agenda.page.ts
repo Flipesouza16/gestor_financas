@@ -49,10 +49,15 @@ export class AgendaPage implements OnInit {
 
   async ngOnInit() {
     await this.loadSaveData();
+    const isSomeLateInstallment = this.checkForLatePurchaseInvoice();
+    if (isSomeLateInstallment) {
+      this.isAnInvoiceForThePreviousMonth = true;
+    }
   }
 
   async loadSaveData() {
     this.currentMonthIndex = new Date().getMonth();
+
     this.nextMonthIndex = this.currentMonthIndex + 1;
     if (this.nextMonthIndex > 11) {
       this.nextMonthIndex = 0;
@@ -71,6 +76,68 @@ export class AgendaPage implements OnInit {
       );
     }
     this.checkIfThereIsAnInvoiceForTheNextMonth();
+  }
+
+  purchasePaid(isPaid: boolean, purchase: PurchaseModel) {
+    if (isPaid) {
+      const indexPurchase = this.listPurchasesByMonth[this.selectedMonth].indexOf(purchase);
+      this.listPurchasesByMonth[this.selectedMonth][indexPurchase].isPaid = true;
+      this.listPurchasesByMonth[this.selectedMonth][indexPurchase].isLate = false;
+      this.savePurchases();
+    }
+  }
+
+  checkForLatePurchaseInvoice() {
+    let indexPreviousMonth = this.currentMonthIndex;
+    let isPreviousPurchase = false;
+    let totalOverduePurchases = 0;
+
+    if (indexPreviousMonth < 0) {
+      indexPreviousMonth = 11;
+    }
+
+    let previousMonthName: string;
+
+    do {
+      previousMonthName = monthNames[indexPreviousMonth];
+
+      let isAllInstallmentHaveBeenPaid = true;
+
+      if (this.listPurchasesByMonth[previousMonthName]?.length) {
+        for (const previousPurchase of this.listPurchasesByMonth[
+          previousMonthName
+        ]) {
+          if (!previousPurchase.isPaid) {
+            previousPurchase.isLate = true;
+            totalOverduePurchases++;
+            isAllInstallmentHaveBeenPaid = false;
+          }
+        }
+      }
+
+      // If all installments have been paid, then remove this month's purchase list
+      if (isAllInstallmentHaveBeenPaid) {
+        delete this.listPurchasesByMonth[previousMonthName];
+      }
+
+      // Repeat check with previous month
+      indexPreviousMonth = indexPreviousMonth - 1;
+
+      if (indexPreviousMonth < 0) {
+        indexPreviousMonth = 11;
+      }
+
+      if (this.listPurchasesByMonth[previousMonthName]?.length) {
+        isPreviousPurchase = true;
+        this.utilsCtrl.showToast(
+          `Você possui ${totalOverduePurchases} ${totalOverduePurchases > 1 ? 'faturas atrasadas' : 'fatura atrasada'}`, 3000,
+          'top',
+          'danger'
+        );
+      }
+    } while (this.listPurchasesByMonth[previousMonthName]?.length);
+
+    return isPreviousPurchase;
   }
 
   async addNewPurchase() {
@@ -198,7 +265,7 @@ export class AgendaPage implements OnInit {
           } else {
             const {
               indexPurchaseList: indexPurchaseListAux,
-              isPurchaseExist: isPurchaseExistAux
+              isPurchaseExist: isPurchaseExistAux,
             } = this.checkIndexPurchaseOfList(payloadPurchase, nextMonths);
 
             if (isPurchaseExistAux) {
@@ -343,14 +410,14 @@ export class AgendaPage implements OnInit {
     for (const purchase of this.listPurchasesByMonth[this.selectedMonth]) {
       this.selectedMonth = monthNames[this.nextMonthIndex];
 
-      let aux = this.nextMonthIndex - 1;
-      if (aux < 0) {
-        aux = 11;
+      let indexPreviousMonth = this.nextMonthIndex - 1;
+      if (indexPreviousMonth < 0) {
+        indexPreviousMonth = 11;
       }
 
-      const monthTest = monthNames[aux];
+      const previousMonthName = monthNames[indexPreviousMonth];
 
-      if (!this.listPurchasesByMonth[monthTest][0]?.installments) {
+      if (!(this.listPurchasesByMonth[previousMonthName] && this.listPurchasesByMonth[previousMonthName][0]?.installments)) {
         this.isAnInvoiceForThePreviousMonth = false;
         break;
       }
@@ -370,7 +437,9 @@ export class AgendaPage implements OnInit {
     }
 
     this.selectedMonth = monthNames[this.nextMonthIndex];
-    this.purchases = JSON.parse(JSON.stringify(this.listPurchasesByMonth[this.selectedMonth]));
+    this.purchases = JSON.parse(
+      JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
+    );
     this.checkIfThereIsAnInvoiceForTheNextMonth();
   }
 
@@ -382,7 +451,9 @@ export class AgendaPage implements OnInit {
     }
 
     this.selectedMonth = monthNames[this.nextMonthIndex];
-    this.purchases = JSON.parse(JSON.stringify(this.listPurchasesByMonth[this.selectedMonth]));
+    this.purchases = JSON.parse(
+      JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
+    );
     this.checkIfThereIsAnInvoiceForThePreviousMonth();
   }
 }

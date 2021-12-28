@@ -10,14 +10,15 @@ export class UtilsService {
   async showToast(
     message: string,
     duration = 1500,
-    position: 'top' | 'bottom' | 'middle' = 'top'
+    position: 'top' | 'bottom' | 'middle' = 'top',
+    color = 'primary'
   ) {
     const toast = await this.toastCtrl.create({
       message,
       mode: 'ios',
       duration,
       position,
-      color: 'primary',
+      color,
     });
 
     await toast.present();

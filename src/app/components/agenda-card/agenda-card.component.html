@@ -16,10 +16,11 @@
       <ion-chip
         color="secondary"
         *ngIf="!isPurchasePaid && !isLatePurchasePayment"
+        (click)="pay()"
       >
         <ion-label>A Pagar</ion-label>
       </ion-chip>
-      <ion-chip color="danger" *ngIf="!isPurchasePaid && isLatePurchasePayment">
+      <ion-chip color="danger" *ngIf="!isPurchasePaid && isLatePurchasePayment" (click)="pay()">
         <ion-label>Atrasado</ion-label>
       </ion-chip>
     </ion-card-content>
