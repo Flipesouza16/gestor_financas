@@ -49,7 +49,7 @@ export class AgendaPage implements OnInit {
 
   async ngOnInit() {
     await this.loadSaveData();
-    const isSomeLateInstallment = this.checkForLatePurchaseInvoice();
+    const isSomeLateInstallment = await this.checkForLatePurchaseInvoice();
     if (isSomeLateInstallment) {
       this.isAnInvoiceForThePreviousMonth = true;
     }
@@ -80,22 +80,20 @@ export class AgendaPage implements OnInit {
 
   purchasePaid(isPaid: boolean, purchase: PurchaseModel) {
     if (isPaid) {
-      const indexPurchase = this.listPurchasesByMonth[this.selectedMonth].indexOf(purchase);
-      this.listPurchasesByMonth[this.selectedMonth][indexPurchase].isPaid = true;
-      this.listPurchasesByMonth[this.selectedMonth][indexPurchase].isLate = false;
+      const indexPurchase =
+        this.listPurchasesByMonth[this.selectedMonth].indexOf(purchase);
+      this.listPurchasesByMonth[this.selectedMonth][indexPurchase].isPaid =
+        true;
+      this.listPurchasesByMonth[this.selectedMonth][indexPurchase].isLate =
+        false;
       this.savePurchases();
     }
   }
 
-  checkForLatePurchaseInvoice() {
+  async checkForLatePurchaseInvoice() {
     let indexPreviousMonth = this.currentMonthIndex;
     let isPreviousPurchase = false;
     let totalOverduePurchases = 0;
-
-    if (indexPreviousMonth < 0) {
-      indexPreviousMonth = 11;
-    }
-
     let previousMonthName: string;
 
     do {
@@ -103,7 +101,10 @@ export class AgendaPage implements OnInit {
 
       let isAllInstallmentHaveBeenPaid = true;
 
-      if (this.listPurchasesByMonth[previousMonthName]?.length) {
+      if (
+        this.listPurchasesByMonth[previousMonthName]?.length &&
+        indexPreviousMonth !== this.currentMonthIndex
+      ) {
         for (const previousPurchase of this.listPurchasesByMonth[
           previousMonthName
         ]) {
@@ -115,9 +116,37 @@ export class AgendaPage implements OnInit {
         }
       }
 
-      // If all installments have been paid, then remove this month's purchase list
-      if (isAllInstallmentHaveBeenPaid) {
-        delete this.listPurchasesByMonth[previousMonthName];
+      if (
+        this.listPurchasesByMonth[previousMonthName]?.length &&
+        indexPreviousMonth === this.currentMonthIndex
+      ) {
+        let totalInstallmentToBePaid = 0;
+        for (const previousPurchase of this.listPurchasesByMonth[
+          previousMonthName
+        ]) {
+          if (!previousPurchase.isPaid) {
+            totalInstallmentToBePaid++;
+            isAllInstallmentHaveBeenPaid = false;
+          }
+        }
+
+        if (!isAllInstallmentHaveBeenPaid) {
+          await this.utilsCtrl.showAlert(
+            `Você possui ${totalInstallmentToBePaid} ${
+              totalInstallmentToBePaid > 1
+                ? 'faturas pendentes'
+                : 'fatura pendente'
+            } para pagar nesse mês de ${monthTranslatedNames[previousMonthName]}`
+          );
+        }
+      }
+
+      if (isPreviousPurchase && !isAllInstallmentHaveBeenPaid) {
+        await this.utilsCtrl.showAlert(
+          `Você possui ${totalOverduePurchases} ${
+            totalOverduePurchases > 1 ? 'faturas atrasadas' : 'fatura atrasada'
+          } de ${monthTranslatedNames[previousMonthName]}`
+        );
       }
 
       // Repeat check with previous month
@@ -129,11 +158,6 @@ export class AgendaPage implements OnInit {
 
       if (this.listPurchasesByMonth[previousMonthName]?.length) {
         isPreviousPurchase = true;
-        this.utilsCtrl.showToast(
-          `Você possui ${totalOverduePurchases} ${totalOverduePurchases > 1 ? 'faturas atrasadas' : 'fatura atrasada'}`, 3000,
-          'top',
-          'danger'
-        );
       }
     } while (this.listPurchasesByMonth[previousMonthName]?.length);
 
@@ -417,7 +441,12 @@ export class AgendaPage implements OnInit {
 
       const previousMonthName = monthNames[indexPreviousMonth];
 
-      if (!(this.listPurchasesByMonth[previousMonthName] && this.listPurchasesByMonth[previousMonthName][0]?.installments)) {
+      if (
+        !(
+          this.listPurchasesByMonth[previousMonthName] &&
+          this.listPurchasesByMonth[previousMonthName][0]?.installments
+        )
+      ) {
         this.isAnInvoiceForThePreviousMonth = false;
         break;
       }
