@@ -27,6 +27,21 @@
           ></ion-input>
         </ion-item>
         <ion-item>
+          <ion-label position="floating">Quem está comprando?</ion-label>
+          <ion-input
+            [(ngModel)]="payloadRegistrationForm.personWhoIsBuying"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item>
+          <ion-label>A compra foi feita esse mês?</ion-label>
+          <ion-select interface="popover" value="null" [(ngModel)]="isCurrentPurchase">
+            <ion-select-option [value]="true">Sim</ion-select-option>
+            <ion-select-option [value]="false">Não</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item *ngIf="isCurrentPurchase">
           <ion-label position="floating">Qual o valor da compra?</ion-label>
           <div class="purchaseValueContainer">
             <b *ngIf="purchaseValueFormatted.length">R$</b> &nbsp;
@@ -37,12 +52,19 @@
             ></ion-input>
           </div>
         </ion-item>
-        <ion-item>
-          <ion-label position="floating">Quem está comprando?</ion-label>
-          <ion-input
-            [(ngModel)]="payloadRegistrationForm.personWhoIsBuying"
-          ></ion-input>
+
+        <ion-item *ngIf="!isCurrentPurchase">
+          <ion-label position="floating">Qual o valor das parcelas?</ion-label>
+          <div class="purchaseValueContainer">
+            <b *ngIf="purchaseValueFormatted.length">R$</b> &nbsp;
+            <ion-input
+              placeholder="0,00"
+              [value]="purchaseValueFormatted ? mascaraMoedaReal(purchaseValueFormatted) : ''"
+              (ionChange)="formatValue($event, true)"
+            ></ion-input>
+          </div>
         </ion-item>
+
         <ion-item>
           <ion-label>Quantas parcelas?</ion-label>
           <ion-select
@@ -75,10 +97,9 @@
       shape="round"
       fill="outline"
       (click)="addNewOrEditPurchase()"
-      >
-        <span *ngIf="!isEditing">Adicionar Compra</span>
-        <span *ngIf="isEditing">Atualizar Compra</span>
-      </ion-button
     >
+      <span *ngIf="!isEditing">Adicionar Compra</span>
+      <span *ngIf="isEditing">Atualizar Compra</span>
+    </ion-button>
   </ion-toolbar>
 </ion-footer>

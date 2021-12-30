@@ -17,6 +17,7 @@ import { generateHash } from '../../utils/utils';
 export class RegistrationFormComponent implements OnInit {
   mascaraMoedaReal = mascaraMoedaReal;
   purchaseUtils = PurchaseUtils;
+  isCurrentPurchase = true;
   isEditing = false;
   payloadPurchase: PurchaseModel;
   purchaseValueFormatted = '';
@@ -54,6 +55,13 @@ export class RegistrationFormComponent implements OnInit {
   }
 
   async addNewOrEditPurchase() {
+    // is an old purchase
+    if (!this.isCurrentPurchase) {
+      this.payloadRegistrationForm.purchaseValue =
+        this.payloadRegistrationForm.installmentAmount *
+        this.payloadRegistrationForm.purchaseInstallments;
+    }
+
     console.log('payloadRegistrationForm: ', this.payloadRegistrationForm);
     const isAllValidFields = await this.isValidField(
       this.payloadRegistrationForm
@@ -84,27 +92,42 @@ export class RegistrationFormComponent implements OnInit {
     }
   }
 
-  formatValue(event) {
-    const purchaseValue = event.target.value;
-    this.purchaseValueFormatted = purchaseValue;
-    this.payloadRegistrationForm.purchaseValue = parseFloat(
-      this.mascaraMoedaReal(purchaseValue).replace('.', '').replace(',', '.')
-    );
+  formatValue(event, isValueOfInstallment = false) {
+    if (isValueOfInstallment) {
+      const purchaseValue = event.target.value;
+      this.purchaseValueFormatted = purchaseValue;
+      this.payloadRegistrationForm.installmentAmount = parseFloat(
+        this.mascaraMoedaReal(purchaseValue).replace('.', '').replace(',', '.')
+      );
+    } else {
+      // By default, the amount is the total purchase amount
+      const purchaseValue = event.target.value;
+      this.purchaseValueFormatted = purchaseValue;
+      this.payloadRegistrationForm.purchaseValue = parseFloat(
+        this.mascaraMoedaReal(purchaseValue).replace('.', '').replace(',', '.')
+      );
+    }
   }
 
   async isValidField(payloadPurchase: PayloadRegistrationForm) {
     if (!payloadPurchase.purchaseTitle) {
       return await this.utilsCtrl.showToast('Qual o título da compra?');
     }
-    if (!payloadPurchase.purchaseValue) {
-      return await this.utilsCtrl.showToast('Qual o valor da compra?');
-    }
+
     if (!payloadPurchase.personWhoIsBuying) {
       return await this.utilsCtrl.showToast('Quem está comprando?');
     }
+
+    if (this.isCurrentPurchase && !payloadPurchase.purchaseValue) {
+      return await this.utilsCtrl.showToast('Qual o valor da compra?');
+    } else if (!this.isCurrentPurchase && !payloadPurchase.installmentAmount) {
+      return await this.utilsCtrl.showToast('Qual o valor das parcelas?');
+    }
+
     if (!payloadPurchase.purchaseInstallments) {
       return await this.utilsCtrl.showToast('São quantas parcelas?');
     }
+
     return true;
   }
 
