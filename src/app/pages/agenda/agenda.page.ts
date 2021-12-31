@@ -25,6 +25,10 @@ export class AgendaPage implements OnInit {
   currentMonthIndex: number;
   selectedMonth: string;
   nextMonthIndex: number;
+  amountOfCurrentMonthsInstallments = {
+    totalAlreadyPaid: 0,
+    totalToPay: 0,
+  };
   listPurchasesByMonth: AllPurchaseByMonth = {
     january: [],
     february: [],
@@ -52,6 +56,23 @@ export class AgendaPage implements OnInit {
     const isSomeLateInstallment = await this.checkForLatePurchaseInvoice();
     if (isSomeLateInstallment) {
       this.isAnInvoiceForThePreviousMonth = true;
+    }
+
+    this.checkTotalAmountOfCurrentMonthsInstallments();
+  }
+
+  checkTotalAmountOfCurrentMonthsInstallments() {
+    this.amountOfCurrentMonthsInstallments.totalToPay = 0;
+    this.amountOfCurrentMonthsInstallments.totalAlreadyPaid = 0;
+
+    for (const purchase of this.listPurchasesByMonth[this.selectedMonth]) {
+      this.amountOfCurrentMonthsInstallments.totalToPay +=
+        purchase.installmentAmount;
+
+      if (purchase.isPaid) {
+        this.amountOfCurrentMonthsInstallments.totalAlreadyPaid +=
+          purchase.installmentAmount;
+      }
     }
   }
 
@@ -82,10 +103,16 @@ export class AgendaPage implements OnInit {
     if (isPaid) {
       const indexPurchase =
         this.listPurchasesByMonth[this.selectedMonth].indexOf(purchase);
+
+      // set purchase to paid
       this.listPurchasesByMonth[this.selectedMonth][indexPurchase].isPaid =
         true;
+
+      // set the purchase as not delayed
       this.listPurchasesByMonth[this.selectedMonth][indexPurchase].isLate =
         false;
+
+      this.checkTotalAmountOfCurrentMonthsInstallments();
       this.savePurchases();
     }
   }
@@ -136,7 +163,9 @@ export class AgendaPage implements OnInit {
               totalInstallmentToBePaid > 1
                 ? 'faturas pendentes'
                 : 'fatura pendente'
-            } para pagar nesse mês de ${monthTranslatedNames[previousMonthName]}`
+            } para pagar nesse mês de ${
+              monthTranslatedNames[previousMonthName]
+            }`
           );
         }
       }
@@ -182,7 +211,7 @@ export class AgendaPage implements OnInit {
 
       this.listPurchasesByMonth[this.currentMonth] = this.purchases;
       this.addInstallmentsPerMonth(newPurchase);
-
+      this.checkTotalAmountOfCurrentMonthsInstallments();
       this.ref.tick();
       await this.savePurchases();
     }
@@ -304,6 +333,7 @@ export class AgendaPage implements OnInit {
           }
         }
 
+        this.checkTotalAmountOfCurrentMonthsInstallments();
         this.ref.tick();
         await this.savePurchases();
       }
@@ -388,6 +418,7 @@ export class AgendaPage implements OnInit {
             }
 
             this.utilsCtrl.showToast('Compra removida com sucesso!');
+            this.checkTotalAmountOfCurrentMonthsInstallments();
             await this.savePurchases();
           },
         },
@@ -470,6 +501,7 @@ export class AgendaPage implements OnInit {
       JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
     );
     this.checkIfThereIsAnInvoiceForTheNextMonth();
+    this.checkTotalAmountOfCurrentMonthsInstallments();
   }
 
   loadPreviousInvoices() {
@@ -484,5 +516,6 @@ export class AgendaPage implements OnInit {
       JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
     );
     this.checkIfThereIsAnInvoiceForThePreviousMonth();
+    this.checkTotalAmountOfCurrentMonthsInstallments();
   }
 }

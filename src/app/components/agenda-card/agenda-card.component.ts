@@ -36,6 +36,7 @@ export class AgendaCardComponent implements OnInit {
     const alert = await this.alertCtrl.create({
       cssClass: 'my-custom-class',
       header: 'Já pagou essa parcela?',
+      mode: 'ios',
       buttons: [
         {
           text: 'Não',
