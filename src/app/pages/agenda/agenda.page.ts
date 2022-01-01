@@ -393,6 +393,7 @@ export class AgendaPage implements OnInit {
   async removerPurchase(purchaseToRemove: PurchaseModel) {
     const alert = await this.alertCtrl.create({
       header: 'Quer mesmo remover esta compra?',
+      mode: 'ios',
       buttons: [
         {
           text: 'Não',
