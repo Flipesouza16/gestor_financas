@@ -168,6 +168,9 @@ export class AgendaPage implements OnInit {
               monthTranslatedNames[previousMonthName]
             }`
           );
+
+          // go to current month
+          this.loadPreviousInvoices();
         }
       }
 
