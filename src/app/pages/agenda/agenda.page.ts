@@ -112,6 +112,7 @@ export class AgendaPage implements OnInit {
       this.listPurchasesByMonth[this.selectedMonth][indexPurchase].isLate =
         false;
 
+      this.checkIfThereIsAnInvoiceForThePreviousMonth();
       this.checkTotalAmountOfCurrentMonthsInstallments();
       this.savePurchases();
     }
@@ -211,6 +212,7 @@ export class AgendaPage implements OnInit {
 
       this.listPurchasesByMonth[this.currentMonth] = this.purchases;
       this.addInstallmentsPerMonth(newPurchase);
+      this.checkIfThereIsAnInvoiceForThePreviousMonth();
       this.checkTotalAmountOfCurrentMonthsInstallments();
       this.ref.tick();
       await this.savePurchases();
@@ -333,6 +335,7 @@ export class AgendaPage implements OnInit {
           }
         }
 
+        this.checkIfThereIsAnInvoiceForThePreviousMonth();
         this.checkTotalAmountOfCurrentMonthsInstallments();
         this.ref.tick();
         await this.savePurchases();
@@ -408,6 +411,7 @@ export class AgendaPage implements OnInit {
     }
 
     this.utilsCtrl.showToast('Compra removida com sucesso!');
+    this.checkIfThereIsAnInvoiceForThePreviousMonth();
     this.checkTotalAmountOfCurrentMonthsInstallments();
     await this.savePurchases();
   }
