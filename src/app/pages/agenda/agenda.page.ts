@@ -420,6 +420,8 @@ export class AgendaPage implements OnInit {
   }
 
   async alertAboutRemovePurchase(purchaseToRemove: PurchaseModel) {
+    const existAnotherInstallmentOfTheSamePurchase = this.checkIfExistAnotherInstallmentOfTheSamePurchase(purchaseToRemove);
+
     const alertToNoticeOneMoreTime = await this.alertCtrl.create({
       header:
         'Essa ação irá remover esta compra de todos os meses, Deseja continuar?',
@@ -449,13 +451,39 @@ export class AgendaPage implements OnInit {
         {
           text: 'Sim',
           handler: async () => {
-            await alertToNoticeOneMoreTime.present();
+            if(existAnotherInstallmentOfTheSamePurchase) {
+              await alertToNoticeOneMoreTime.present();
+            } else {
+              await this.removePurchase(purchaseToRemove);
+            }
           },
         },
       ],
     });
 
     await firstAlert.present();
+  }
+
+  checkIfExistAnotherInstallmentOfTheSamePurchase(purchaseToRemove: PurchaseModel) {
+    let existAnotherInstallment = false;
+    const indexNextMonth = this.nextMonthIndex + 1;
+    const indexPreviousMonth = this.nextMonthIndex - 1;
+
+    for(const nextsPurchase of this.listPurchasesByMonth[monthNames[indexNextMonth]]) {
+      if(nextsPurchase.hash === purchaseToRemove.hash) {
+        console.log('nextsPurchase: ',nextsPurchase);
+        existAnotherInstallment = true;
+      }
+    }
+
+    for(const previousPurchase of this.listPurchasesByMonth[monthNames[indexPreviousMonth]]) {
+      if(previousPurchase.hash === purchaseToRemove.hash) {
+        console.log('previousPurchase: ',previousPurchase);
+        existAnotherInstallment = true;
+      }
+    }
+
+    return existAnotherInstallment;
   }
 
   backToStart(purchase: PurchaseModel) {
