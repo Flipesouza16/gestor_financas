@@ -32,14 +32,8 @@ const adapterPurchaseData = ({ payloadPurchaseRegistration = null, payloadPurcha
 const formatvalueAccordingToTheAmountOfZerosAtTheEnd = (
   purchaseValueFormatted: string
 ) => {
-
-  console.log('antes purchaseValueFormatted: ', purchaseValueFormatted.replace('.', ','));
-
   const currentValue = purchaseValueFormatted.replace('.', ',');
   const valueWithMask = mascaraMoedaReal(purchaseValueFormatted);
-
-  console.log('currentValue: ', Number(currentValue));
-  console.log('valueWithMask: ', valueWithMask);
 
   let newPurchaseValue = purchaseValueFormatted;
   let isValueCorrect = false;
@@ -50,10 +44,7 @@ const formatvalueAccordingToTheAmountOfZerosAtTheEnd = (
     isValueCorrect = false;
   }
 
-  console.log('isValueCorrect: ', isValueCorrect);
-
   let valueTemp = mascaraMoedaReal(purchaseValueFormatted).replace(',', '.');
-  console.log('valueTemp: ', valueTemp);
   let valueToCompare;
 
   while (!isValueCorrect) {

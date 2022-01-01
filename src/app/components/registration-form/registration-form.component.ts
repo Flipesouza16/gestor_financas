@@ -46,11 +46,6 @@ export class RegistrationFormComponent implements OnInit {
         this.purchaseUtils.formatvalueAccordingToTheAmountOfZerosAtTheEnd(
           String(this.payloadRegistrationForm.purchaseValue)
         );
-
-      console.log(
-        'this.payloadRegistrationForm: ',
-        this.payloadRegistrationForm
-      );
     }
   }
 
@@ -62,7 +57,6 @@ export class RegistrationFormComponent implements OnInit {
         this.payloadRegistrationForm.purchaseInstallments;
     }
 
-    console.log('payloadRegistrationForm: ', this.payloadRegistrationForm);
     const isAllValidFields = await this.isValidField(
       this.payloadRegistrationForm
     );
