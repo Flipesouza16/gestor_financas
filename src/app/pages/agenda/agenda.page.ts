@@ -390,8 +390,47 @@ export class AgendaPage implements OnInit {
     });
   }
 
-  async removerPurchase(purchaseToRemove: PurchaseModel) {
-    const alert = await this.alertCtrl.create({
+  async removePurchase(purchaseToRemove: PurchaseModel) {
+    this.purchases.splice(this.purchases.indexOf(purchaseToRemove), 1);
+    this.listPurchasesByMonth[this.selectedMonth] = this.purchases;
+
+    const allPurchases = Object.values(this.listPurchasesByMonth);
+
+    for (const purchases of allPurchases) {
+      if (purchases.length) {
+        for (const purchase of purchases) {
+          if (purchase.hash === purchaseToRemove.hash) {
+            purchases.splice(purchases.indexOf(purchase), 1);
+            this.backToStart(purchase);
+          }
+        }
+      }
+    }
+
+    this.utilsCtrl.showToast('Compra removida com sucesso!');
+    this.checkTotalAmountOfCurrentMonthsInstallments();
+    await this.savePurchases();
+  }
+
+  async alertAboutRemovePurchase(purchaseToRemove: PurchaseModel) {
+    const alertToNoticeOneMoreTime = await this.alertCtrl.create({
+      header: 'Essa ação irá remover esta compra de todos os meses, Deseja continuar?',
+      mode: 'ios',
+      buttons: [
+        {
+          text: 'Não',
+          role: 'cancel',
+        },
+        {
+          text: 'Sim',
+          handler: async () => {
+            await this.removePurchase(purchaseToRemove);
+          },
+        },
+      ],
+    });
+
+    const firstAlert = await this.alertCtrl.create({
       header: 'Quer mesmo remover esta compra?',
       mode: 'ios',
       buttons: [
@@ -402,31 +441,13 @@ export class AgendaPage implements OnInit {
         {
           text: 'Sim',
           handler: async () => {
-            this.purchases.splice(this.purchases.indexOf(purchaseToRemove), 1);
-            this.listPurchasesByMonth[this.selectedMonth] = this.purchases;
-
-            const allPurchases = Object.values(this.listPurchasesByMonth);
-
-            for (const purchases of allPurchases) {
-              if (purchases.length) {
-                for (const purchase of purchases) {
-                  if (purchase.hash === purchaseToRemove.hash) {
-                    purchases.splice(purchases.indexOf(purchase), 1);
-                    this.backToStart(purchase);
-                  }
-                }
-              }
-            }
-
-            this.utilsCtrl.showToast('Compra removida com sucesso!');
-            this.checkTotalAmountOfCurrentMonthsInstallments();
-            await this.savePurchases();
+            await alertToNoticeOneMoreTime.present();
           },
         },
       ],
     });
 
-    await alert.present();
+    await firstAlert.present();
   }
 
   backToStart(purchase: PurchaseModel) {
