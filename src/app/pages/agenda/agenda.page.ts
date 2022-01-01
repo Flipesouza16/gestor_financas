@@ -517,7 +517,7 @@ export class AgendaPage implements OnInit {
         break;
       }
 
-      if (purchase.installments > 1) {
+      if (purchase.installments) {
         this.isAnInvoiceForThePreviousMonth = true;
         break;
       }
