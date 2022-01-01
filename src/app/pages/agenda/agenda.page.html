@@ -3,8 +3,8 @@
     <ion-title>Agenda de {{ monthTranslatedNames[selectedMonth] }}</ion-title>
     <div class="debtsOfMonth">
        <span
-         >Dívidas do mês {{ amountOfCurrentMonthsInstallments.totalAlreadyPaid
-         }}/{{ amountOfCurrentMonthsInstallments.totalToPay }}</span
+         >Despesas: {{ amountOfCurrentMonthsInstallments.totalAlreadyPaid.toFixed(2)
+         }}/{{ amountOfCurrentMonthsInstallments.totalToPay.toFixed(2) }}</span
        >
        <ion-icon name="cash"></ion-icon>
      </div>
