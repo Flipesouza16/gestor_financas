@@ -421,7 +421,8 @@ export class AgendaPage implements OnInit {
 
   async alertAboutRemovePurchase(purchaseToRemove: PurchaseModel) {
     const alertToNoticeOneMoreTime = await this.alertCtrl.create({
-      header: 'Essa ação irá remover esta compra de todos os meses, Deseja continuar?',
+      header:
+        'Essa ação irá remover esta compra de todos os meses, Deseja continuar?',
       mode: 'ios',
       buttons: [
         {
@@ -478,13 +479,18 @@ export class AgendaPage implements OnInit {
   checkIfThereIsAnInvoiceForTheNextMonth() {
     this.isAnInvoiceForTheNextMonth = false;
 
-    for (const purchase of this.listPurchasesByMonth[this.selectedMonth]) {
-      if (purchase.installments > 1) {
+    let indexNextMonth = this.nextMonthIndex + 1;
+
+    if (indexNextMonth > 11) {
+      indexNextMonth = 0;
+    }
+
+    const nameNextMonth = monthNames[indexNextMonth];
+
+    for (const purchase of this.listPurchasesByMonth[nameNextMonth]) {
+      if (purchase.installments) {
         this.isAnInvoiceForTheNextMonth = true;
         break;
-      }
-      if (purchase.installments === 1) {
-        this.isAnInvoiceForTheNextMonth = false;
       }
     }
   }
