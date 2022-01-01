@@ -420,7 +420,8 @@ export class AgendaPage implements OnInit {
   }
 
   async alertAboutRemovePurchase(purchaseToRemove: PurchaseModel) {
-    const existAnotherInstallmentOfTheSamePurchase = this.checkIfExistAnotherInstallmentOfTheSamePurchase(purchaseToRemove);
+    const existAnotherInstallmentOfTheSamePurchase =
+      this.checkIfExistAnotherInstallmentOfTheSamePurchase(purchaseToRemove);
 
     const alertToNoticeOneMoreTime = await this.alertCtrl.create({
       header:
@@ -451,7 +452,7 @@ export class AgendaPage implements OnInit {
         {
           text: 'Sim',
           handler: async () => {
-            if(existAnotherInstallmentOfTheSamePurchase) {
+            if (existAnotherInstallmentOfTheSamePurchase) {
               await alertToNoticeOneMoreTime.present();
             } else {
               await this.removePurchase(purchaseToRemove);
@@ -464,21 +465,27 @@ export class AgendaPage implements OnInit {
     await firstAlert.present();
   }
 
-  checkIfExistAnotherInstallmentOfTheSamePurchase(purchaseToRemove: PurchaseModel) {
+  checkIfExistAnotherInstallmentOfTheSamePurchase(
+    purchaseToRemove: PurchaseModel
+  ) {
     let existAnotherInstallment = false;
     const indexNextMonth = this.nextMonthIndex + 1;
     const indexPreviousMonth = this.nextMonthIndex - 1;
 
-    for(const nextsPurchase of this.listPurchasesByMonth[monthNames[indexNextMonth]]) {
-      if(nextsPurchase.hash === purchaseToRemove.hash) {
-        console.log('nextsPurchase: ',nextsPurchase);
+    for (const nextsPurchase of this.listPurchasesByMonth[
+      monthNames[indexNextMonth]
+    ]) {
+      if (nextsPurchase.hash === purchaseToRemove.hash) {
+        console.log('nextsPurchase: ', nextsPurchase);
         existAnotherInstallment = true;
       }
     }
 
-    for(const previousPurchase of this.listPurchasesByMonth[monthNames[indexPreviousMonth]]) {
-      if(previousPurchase.hash === purchaseToRemove.hash) {
-        console.log('previousPurchase: ',previousPurchase);
+    for (const previousPurchase of this.listPurchasesByMonth[
+      monthNames[indexPreviousMonth]
+    ]) {
+      if (previousPurchase.hash === purchaseToRemove.hash) {
+        console.log('previousPurchase: ', previousPurchase);
         existAnotherInstallment = true;
       }
     }
@@ -534,11 +541,13 @@ export class AgendaPage implements OnInit {
       }
 
       const previousMonthName = monthNames[indexPreviousMonth];
+      const nextMonthScheduled = monthNames[this.currentMonthIndex + 1];
 
       if (
         !(
-          this.listPurchasesByMonth[previousMonthName] &&
-          this.listPurchasesByMonth[previousMonthName][0]?.installments
+          (this.listPurchasesByMonth[previousMonthName] &&
+            this.listPurchasesByMonth[previousMonthName][0]?.installments) ||
+          nextMonthScheduled === previousMonthName
         )
       ) {
         this.isAnInvoiceForThePreviousMonth = false;
