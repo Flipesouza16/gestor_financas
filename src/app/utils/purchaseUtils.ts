@@ -1,7 +1,14 @@
-import { AdapterPurchase, PayloadRegistrationForm, PurchaseModel } from './types/purchaseType';
+import {
+  AdapterPurchase,
+  PayloadRegistrationForm,
+  PurchaseModel,
+} from './types/purchaseType';
 import { mascaraMoedaReal } from './utils';
 
-const adapterPurchaseData = ({ payloadPurchaseRegistration = null, payloadPurchaseModel = null, }: AdapterPurchase) => {
+const adapterPurchaseData = ({
+  payloadPurchaseRegistration = null,
+  payloadPurchaseModel = null,
+}: AdapterPurchase) => {
   if (payloadPurchaseRegistration) {
     const purchaseAdapted: PurchaseModel = {
       hash: payloadPurchaseRegistration.hash,
@@ -34,11 +41,12 @@ const formatvalueAccordingToTheAmountOfZerosAtTheEnd = (
 ) => {
   const currentValue = purchaseValueFormatted.replace('.', ',');
   const valueWithMask = mascaraMoedaReal(purchaseValueFormatted);
+  const valueWithoutDot = valueWithMask.replace('.', '');
 
   let newPurchaseValue = purchaseValueFormatted;
   let isValueCorrect = false;
 
-  if (currentValue === valueWithMask) {
+  if (currentValue === valueWithMask || currentValue === valueWithoutDot) {
     isValueCorrect = true;
   } else {
     isValueCorrect = false;
@@ -53,11 +61,21 @@ const formatvalueAccordingToTheAmountOfZerosAtTheEnd = (
     valueToCompare = Number(mascaraMoedaReal(valueTemp).replace(',', '.'));
     const currentValueWithMask = mascaraMoedaReal(valueTemp);
 
-    let [valueFormatted] = currentValueWithMask.replace('.', '').split(',');
-    valueFormatted = Number(valueFormatted);
+    let valueFormattedWithoutSplitting = currentValueWithMask
+      .replace('.', '')
+      .replace(',', '.');
+    let [splitedFormattedValue] = currentValueWithMask
+      .replace('.', '')
+      .split(',');
+    splitedFormattedValue = Number(splitedFormattedValue);
+    valueFormattedWithoutSplitting = Number(valueFormattedWithoutSplitting);
 
-    if (valueFormatted === Number(purchaseValueFormatted)) {
-      valueToCompare = valueFormatted;
+    if (splitedFormattedValue === Number(purchaseValueFormatted)) {
+      valueToCompare = splitedFormattedValue;
+    } else if (
+      valueFormattedWithoutSplitting === Number(purchaseValueFormatted)
+    ) {
+      valueToCompare = valueFormattedWithoutSplitting;
     }
 
     if (valueToCompare === Number(purchaseValueFormatted)) {
