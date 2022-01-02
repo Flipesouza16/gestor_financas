@@ -35,7 +35,11 @@
 
         <ion-item>
           <ion-label>A compra foi feita esse mês?</ion-label>
-          <ion-select interface="popover" value="null" [(ngModel)]="isCurrentPurchase">
+          <ion-select
+            interface="popover"
+            value="null"
+            [(ngModel)]="isCurrentPurchase"
+          >
             <ion-select-option [value]="true">Sim</ion-select-option>
             <ion-select-option [value]="false">Não</ion-select-option>
           </ion-select>
@@ -46,10 +50,17 @@
           <div class="purchaseValueContainer">
             <b *ngIf="purchaseValueFormatted.length">R$</b> &nbsp;
             <ion-input
+              type="number"
               placeholder="0,00"
-              [value]="purchaseValueFormatted ? mascaraMoedaReal(purchaseValueFormatted) : ''"
+              [value]="purchaseValueFormatted"
               (ionChange)="formatValue($event)"
-            ></ion-input>
+            >
+            </ion-input>
+            <span style="margin-right: 100%">{{
+              purchaseValueFormatted
+                ? mascaraMoedaReal(purchaseValueFormatted)
+                : ""
+            }}</span>
           </div>
         </ion-item>
 
@@ -58,10 +69,16 @@
           <div class="purchaseValueContainer">
             <b *ngIf="purchaseValueFormatted.length">R$</b> &nbsp;
             <ion-input
+              type="number"
               placeholder="0,00"
-              [value]="purchaseValueFormatted ? mascaraMoedaReal(purchaseValueFormatted) : ''"
+              [value]="purchaseValueFormatted"
               (ionChange)="formatValue($event, true)"
             ></ion-input>
+            <span style="margin-right: 100%">{{
+              purchaseValueFormatted
+                ? mascaraMoedaReal(purchaseValueFormatted)
+                : ""
+            }}</span>
           </div>
         </ion-item>
 
