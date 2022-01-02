@@ -397,7 +397,6 @@ export class AgendaPage implements OnInit {
   }
 
   async removePurchase(purchaseToRemove: PurchaseModel) {
-    this.purchases.splice(this.purchases.indexOf(purchaseToRemove), 1);
     this.listPurchasesByMonth[this.selectedMonth] = this.purchases;
 
     const allPurchases = Object.values(this.listPurchasesByMonth);
