@@ -471,23 +471,28 @@ export class AgendaPage implements OnInit {
     const indexNextMonth = this.nextMonthIndex + 1;
     const indexPreviousMonth = this.nextMonthIndex - 1;
 
-    for (const nextsPurchase of this.listPurchasesByMonth[
-      monthNames[indexNextMonth]
-    ]) {
-      if (nextsPurchase.hash === purchaseToRemove.hash) {
-        console.log('nextsPurchase: ', nextsPurchase);
-        existAnotherInstallment = true;
+    if(this.listPurchasesByMonth[monthNames[indexNextMonth]]?.length) {
+      for (const nextsPurchase of this.listPurchasesByMonth[
+        monthNames[indexNextMonth]
+      ]) {
+        if (nextsPurchase.hash === purchaseToRemove.hash) {
+          console.log('nextsPurchase: ', nextsPurchase);
+          existAnotherInstallment = true;
+        }
       }
     }
 
-    for (const previousPurchase of this.listPurchasesByMonth[
-      monthNames[indexPreviousMonth]
-    ]) {
-      if (previousPurchase.hash === purchaseToRemove.hash) {
-        console.log('previousPurchase: ', previousPurchase);
-        existAnotherInstallment = true;
+    if(this.listPurchasesByMonth[monthNames[indexPreviousMonth]]?.length) {
+      for (const previousPurchase of this.listPurchasesByMonth[
+        monthNames[indexPreviousMonth]
+      ]) {
+        if (previousPurchase.hash === purchaseToRemove.hash) {
+          console.log('previousPurchase: ', previousPurchase);
+          existAnotherInstallment = true;
+        }
       }
     }
+
 
     return existAnotherInstallment;
   }
