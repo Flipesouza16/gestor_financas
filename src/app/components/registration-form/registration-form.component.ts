@@ -1,13 +1,15 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 import { UtilsService } from 'src/app/services/utils/utils.service';
 import {
   PayloadRegistrationForm,
   PurchaseModel,
 } from 'src/app/utils/types/purchaseType';
-import { mascaraMoedaReal } from '../../utils/utils';
+import { mascaraMoedaReal, capitalizeFirstLetter } from '../../utils/utils';
 import PurchaseUtils from 'src/app/utils/purchaseUtils';
 import { generateHash } from '../../utils/utils';
+import { ListOfWhoIsBuyingComponent } from '../list-of-who-is-buying/list-of-who-is-buying.component';
+import { Storage } from '@capacitor/storage';
 
 @Component({
   selector: 'app-registration-form',
@@ -15,12 +17,17 @@ import { generateHash } from '../../utils/utils';
   styleUrls: ['./registration-form.component.scss'],
 })
 export class RegistrationFormComponent implements OnInit {
+  @ViewChild('inputNameWhoIsBuying') inputNameWhoIsBuying: any;
+
   mascaraMoedaReal = mascaraMoedaReal;
+  capitalizeFirstLetter = capitalizeFirstLetter;
   purchaseUtils = PurchaseUtils;
   isCurrentPurchase = true;
   isEditing = false;
+  listOfBuyersNames: string[] = [];
   payloadPurchase: PurchaseModel;
   purchaseValueFormatted = '';
+  isAnotherPersonWhoIsBuying = false;
   payloadRegistrationForm: PayloadRegistrationForm = {
     hash: generateHash(),
     personWhoIsBuying: '',
@@ -46,6 +53,18 @@ export class RegistrationFormComponent implements OnInit {
         this.purchaseUtils.formatvalueAccordingToTheAmountOfZerosAtTheEnd(
           String(this.payloadRegistrationForm.purchaseValue)
         );
+    }
+
+    this.loadListOfBuyersNamesIfExists();
+  }
+
+  async loadListOfBuyersNamesIfExists() {
+    const { value } = await Storage.get({
+      key: 'list-of-buyers-names',
+    });
+
+    if (value) {
+      this.listOfBuyersNames = JSON.parse(value);
     }
   }
 
@@ -80,6 +99,15 @@ export class RegistrationFormComponent implements OnInit {
       this.payloadRegistrationForm.totalInstallments =
         this.payloadRegistrationForm.purchaseInstallments;
 
+      //  First letter of all words to uppercase
+      this.payloadRegistrationForm.personWhoIsBuying = capitalizeFirstLetter(
+        this.payloadRegistrationForm.personWhoIsBuying
+      );
+
+      this.saveListOfBuyersNames(
+        this.payloadRegistrationForm.personWhoIsBuying
+      );
+
       setTimeout(() => {
         this.dismiss(this.payloadRegistrationForm);
       }, 1500);
@@ -100,6 +128,40 @@ export class RegistrationFormComponent implements OnInit {
       this.payloadRegistrationForm.purchaseValue = parseFloat(
         this.mascaraMoedaReal(purchaseValue).replace('.', '').replace(',', '.')
       );
+    }
+  }
+
+  async openAlertAboutWhoIsBuying() {
+    const modal = await this.modalCtrl.create({
+      component: ListOfWhoIsBuyingComponent,
+      cssClass: 'small-modal',
+      backdropDismiss: true,
+      componentProps: {
+        listOfBuyersNames: this.listOfBuyersNames,
+      },
+    });
+
+    await modal.present();
+
+    const { data: nameOfWhoIsBuying } = await modal.onDidDismiss();
+
+    if (nameOfWhoIsBuying && nameOfWhoIsBuying !== 'another') {
+      this.payloadRegistrationForm.personWhoIsBuying = nameOfWhoIsBuying;
+    } else if (nameOfWhoIsBuying) {
+      this.isAnotherPersonWhoIsBuying = true;
+      this.payloadRegistrationForm.personWhoIsBuying = '';
+      this.inputNameWhoIsBuying.setFocus();
+    }
+  }
+
+  async saveListOfBuyersNames(personWhoIsBuying: string) {
+    if (!this.listOfBuyersNames?.includes(personWhoIsBuying)) {
+      this.listOfBuyersNames.push(personWhoIsBuying);
+
+      await Storage.set({
+        key: 'list-of-buyers-names',
+        value: JSON.stringify(this.listOfBuyersNames),
+      });
     }
   }
 

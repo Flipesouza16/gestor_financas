@@ -76,6 +76,17 @@
   --ion-color-light-tint: #f5f6f9;
 }
 
+.small-modal {
+  background: #00000083 !important;
+  .modal-wrapper {
+    max-height: 350px;
+    max-width: 250px;
+    font-size: 22px;
+    margin: auto;
+    border-radius: 15px;
+  }
+}
+
 // @media (prefers-color-scheme: dark) {}
 
  /*
