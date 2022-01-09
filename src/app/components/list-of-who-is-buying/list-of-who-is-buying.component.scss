@@ -1,0 +1,47 @@
+ion-header {
+  height: 60px;
+  ion-toolbar {
+    text-align: center;
+  }
+}
+
+ion-content {
+  .empty-list {
+    font-size: 18px;
+    font-weight: bold;
+    justify-content: center;
+    margin: auto;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    display: flex;
+  }
+
+  ion-list {
+    height: 100;
+    bottom: 0;
+
+    ion-item {
+      span {
+        color: #fff;
+        font-size: 18px;
+        font-weight: bold;
+      }
+    }
+  }
+}
+
+ion-footer {
+  .btn-footer {
+    margin: auto;
+    width: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: row;
+
+    ion-button {
+      width: 100%;
+      font-weight: bold;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <span>Quem está comprando?</span>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <ion-list *ngIf="listOfBuyersNames?.length">
+    <ng-template ngFor let-name [ngForOf]="listOfBuyersNames">
+      <ion-item>
+        <span (click)="selectWhoIsBuying(name)">{{ name }}</span>
+      </ion-item>
+    </ng-template>
+  </ion-list>
+
+  <span *ngIf="!listOfBuyersNames?.length" class="empty-list">Lista vazia</span>
+</ion-content>
+
+<ion-footer>
+  <div class="btn-footer">
+    <ion-button (click)="whoIsBuyingIsMe()">Eu</ion-button>
+    <ion-button (click)="whoIsBuyingIsAnother()">Outra pessoa</ion-button>
+  </div>
+</ion-footer>
