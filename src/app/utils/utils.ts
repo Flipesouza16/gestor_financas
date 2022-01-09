@@ -11,6 +11,19 @@ export const mascaraMoedaReal = (moeda: any) => {
   return moedaFormatada;
 };
 
+export const capitalizeFirstLetter = (text: string) => {
+  if(text.includes(' ')) {
+    const listOfTexts = text.split(' ');
+    let textToReturn = '';
+    for(const textSplitted of listOfTexts) {
+      textToReturn += textSplitted.charAt(0).toUpperCase() + textSplitted.slice(1) + ' ';
+    }
+    return textToReturn.trim();
+  } else {
+    return text.charAt(0).toUpperCase() + text.slice(1);
+  }
+};
+
 export const monthNames = [
   'january', //0
   'february', //1
