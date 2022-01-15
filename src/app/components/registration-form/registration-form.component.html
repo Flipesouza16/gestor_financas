@@ -30,7 +30,7 @@
           <ion-label position="floating">Quem está comprando?</ion-label>
           <ion-input
             #inputNameWhoIsBuying
-            [placeholder]="isAnotherPersonWhoIsBuying && 'Preencha o nome da pessoa'"
+            placeholder="Preencha o nome da pessoa"
             [(ngModel)]="payloadRegistrationForm.personWhoIsBuying"
             (click)="!isAnotherPersonWhoIsBuying && openAlertAboutWhoIsBuying()"
             (ionBlur)="isAnotherPersonWhoIsBuying = false;"
