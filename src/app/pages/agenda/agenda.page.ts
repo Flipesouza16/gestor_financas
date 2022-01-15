@@ -67,11 +67,19 @@ export class AgendaPage implements OnInit {
     this.loadListOfBuyersNamesIfExists();
   }
 
-  checkTotalAmountOfCurrentMonthsInstallments() {
+  checkTotalAmountOfCurrentMonthsInstallments(nameFiltered?: string) {
     this.amountOfCurrentMonthsInstallments.totalToPay = 0;
     this.amountOfCurrentMonthsInstallments.totalAlreadyPaid = 0;
 
-    for (const purchase of this.listPurchasesByMonth[this.selectedMonth]) {
+    let allPurchasesByMonth: PurchaseModel[];
+
+    if(nameFiltered && nameFiltered !== 'Todos') {
+      allPurchasesByMonth = this.listPurchasesByMonth[this.selectedMonth].filter(purchase => purchase.buyer === nameFiltered);
+    } else {
+      allPurchasesByMonth = this.listPurchasesByMonth[this.selectedMonth];
+    }
+
+    for (const purchase of allPurchasesByMonth) {
       this.amountOfCurrentMonthsInstallments.totalToPay +=
         purchase.installmentAmount;
 
@@ -150,7 +158,7 @@ export class AgendaPage implements OnInit {
 
     const { data: name } = await modal.onDidDismiss();
     if(name) {
-      console.log('name: ',name);
+      this.checkTotalAmountOfCurrentMonthsInstallments(name);
       this.filterNameWhoIsBuying = name;
       if(name === 'Eu') {
         this.titleBuyerDebts = 'Minhas compras';
