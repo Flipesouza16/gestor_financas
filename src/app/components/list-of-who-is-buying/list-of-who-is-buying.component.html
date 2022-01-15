@@ -1,13 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <span>Quem está comprando?</span>
+    <span>{{ titlePage }}</span>
   </ion-toolbar>
 </ion-header>
 <ion-content>
   <ion-list *ngIf="listOfBuyersNames?.length">
     <ng-template ngFor let-name [ngForOf]="listOfBuyersNames">
       <ion-item>
-        <span (click)="selectWhoIsBuying(name)">{{ name }}</span>
+        <span style="width: 100%;" (click)="selectWhoIsBuying(name)">{{ name }}</span>
       </ion-item>
     </ng-template>
   </ion-list>
@@ -16,8 +16,11 @@
 </ion-content>
 
 <ion-footer>
-  <div class="btn-footer">
+  <div class="btn-footer" *ngIf="!isFilter">
     <ion-button fill="outline" (click)="whoIsBuyingIsMe()">Eu</ion-button>
     <ion-button fill="outline" (click)="whoIsBuyingIsAnother()">Outra pessoa</ion-button>
+  </div>
+  <div class="btn-footer" *ngIf="isFilter">
+    <ion-button fill="outline" (click)="dismiss()">Cancelar</ion-button>
   </div>
 </ion-footer>

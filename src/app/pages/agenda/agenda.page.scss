@@ -18,20 +18,20 @@ ion-header {
 
 .debtsOfMonth {
   display: flex;
-  align-items: center;
   margin: 17px 0 0 23px;
 
   span {
     // margin-left: 23px;
-    font-size: 20px;
+    font-size: 19px;
+    margin-right: 20px;
   }
 
   ion-icon {
-    margin-left: 10px;
     font-size: 26px;
+    position: absolute;
+    right: 0;
   }
 }
-
 
 ion-list {
   background-color: transparent;

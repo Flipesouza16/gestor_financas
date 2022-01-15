@@ -1,13 +1,17 @@
 <ion-header>
   <ion-toolbar>
     <ion-title>Agenda de {{ monthTranslatedNames[selectedMonth] }}</ion-title>
+
     <div class="debtsOfMonth">
-       <span
-         >Despesas: {{ amountOfCurrentMonthsInstallments.totalAlreadyPaid.toFixed(2)
-         }}/{{ amountOfCurrentMonthsInstallments.totalToPay.toFixed(2) }}</span
-       >
-       <ion-icon name="cash"></ion-icon>
-     </div>
+      <span>{{ titleBuyerDebts }} </span>
+      <span
+        >{{ amountOfCurrentMonthsInstallments.totalAlreadyPaid.toFixed(2) }}/{{
+        amountOfCurrentMonthsInstallments.totalToPay.toFixed(2) }}
+      </span>
+
+      <ion-icon name="ellipsis-vertical" (click)="filterWhoIsBuying()"></ion-icon>
+    </div>
+
     <ion-buttons>
       <ion-button
         shape="round"
@@ -39,6 +43,7 @@
       *ngFor="let purchase of listPurchasesByMonth[selectedMonth]"
     >
       <app-agenda-card
+        *ngIf="filterNameWhoIsBuying === purchase.buyer || filterNameWhoIsBuying === 'Todos'"
         [purchaseTitle]="purchase.title"
         [purchaseValue]="purchase.installmentAmount"
         [buyer]="purchase.buyer"

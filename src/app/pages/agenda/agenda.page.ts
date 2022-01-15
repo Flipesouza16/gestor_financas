@@ -9,6 +9,7 @@ import { Storage } from '@capacitor/storage';
 import PurchaseUtils from '../../utils/purchaseUtils';
 import { UtilsService } from 'src/app/services/utils/utils.service';
 import { monthNames, monthTranslatedNames } from '../../utils/utils';
+import { ListOfWhoIsBuyingComponent } from 'src/app/components/list-of-who-is-buying/list-of-who-is-buying.component';
 @Component({
   selector: 'app-agenda',
   templateUrl: './agenda.page.html',
@@ -25,6 +26,9 @@ export class AgendaPage implements OnInit {
   currentMonthIndex: number;
   selectedMonth: string;
   nextMonthIndex: number;
+  listOfBuyersNames: string[] = [];
+  filterNameWhoIsBuying = 'Todos';
+  titleBuyerDebts = 'Todas as compras';
   amountOfCurrentMonthsInstallments = {
     totalAlreadyPaid: 0,
     totalToPay: 0,
@@ -48,7 +52,7 @@ export class AgendaPage implements OnInit {
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private utilsCtrl: UtilsService,
-    private ref: ApplicationRef
+    private ref: ApplicationRef,
   ) {}
 
   async ngOnInit() {
@@ -59,6 +63,7 @@ export class AgendaPage implements OnInit {
     }
 
     this.checkTotalAmountOfCurrentMonthsInstallments();
+    this.loadListOfBuyersNamesIfExists();
   }
 
   checkTotalAmountOfCurrentMonthsInstallments() {
@@ -115,6 +120,45 @@ export class AgendaPage implements OnInit {
       this.checkIfThereIsAnInvoiceForThePreviousMonth();
       this.checkTotalAmountOfCurrentMonthsInstallments();
       this.savePurchases();
+    }
+  }
+
+  async loadListOfBuyersNamesIfExists() {
+    const { value } = await Storage.get({
+      key: 'list-of-buyers-names',
+    });
+
+    if (value) {
+      this.listOfBuyersNames = JSON.parse(value);
+      console.log('this.listOfBuyersNames: ',this.listOfBuyersNames);
+    }
+  }
+
+  async filterWhoIsBuying() {
+    const modal = await this.modalCtrl.create({
+      component: ListOfWhoIsBuyingComponent,
+      cssClass: 'small-modal',
+      backdropDismiss: true,
+      componentProps: {
+        listOfBuyersNames: this.listOfBuyersNames,
+        isFilter: true
+      },
+    });
+
+    await modal.present();
+
+    const { data: name } = await modal.onDidDismiss();
+    if(name) {
+      console.log('name: ',name);
+      this.filterNameWhoIsBuying = name;
+      if(name === 'Eu') {
+        this.titleBuyerDebts = 'Minhas compras';
+      } else if(name === 'Todos') {
+        this.titleBuyerDebts = 'Todas as compras';
+      }
+       else {
+        this.titleBuyerDebts = `Compras de ${name}`;
+      }
     }
   }
 
