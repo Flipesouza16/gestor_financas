@@ -5,11 +5,17 @@
     <div class="debtsOfMonth">
       <span>{{ titleBuyerDebts }} </span>
       <span
-        >{{ amountOfCurrentMonthsInstallments.totalAlreadyPaid.toFixed(2) }}/{{
-        amountOfCurrentMonthsInstallments.totalToPay.toFixed(2) }}
+        >{{
+        mascaraMoedaReal(amountOfCurrentMonthsInstallments.totalAlreadyPaid.toFixed(2))
+        }}/{{
+        mascaraMoedaReal(amountOfCurrentMonthsInstallments.totalToPay.toFixed(2))
+        }}
       </span>
 
-      <ion-icon name="ellipsis-vertical" (click)="filterWhoIsBuying()"></ion-icon>
+      <ion-icon
+        name="ellipsis-vertical"
+        (click)="filterWhoIsBuying()"
+      ></ion-icon>
     </div>
 
     <ion-buttons>

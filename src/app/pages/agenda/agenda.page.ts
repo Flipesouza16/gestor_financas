@@ -8,7 +8,7 @@ import {
 import { Storage } from '@capacitor/storage';
 import PurchaseUtils from '../../utils/purchaseUtils';
 import { UtilsService } from 'src/app/services/utils/utils.service';
-import { monthNames, monthTranslatedNames } from '../../utils/utils';
+import { mascaraMoedaReal, monthNames, monthTranslatedNames } from '../../utils/utils';
 import { ListOfWhoIsBuyingComponent } from 'src/app/components/list-of-who-is-buying/list-of-who-is-buying.component';
 @Component({
   selector: 'app-agenda',
@@ -16,6 +16,7 @@ import { ListOfWhoIsBuyingComponent } from 'src/app/components/list-of-who-is-bu
   styleUrls: ['./agenda.page.scss'],
 })
 export class AgendaPage implements OnInit {
+  mascaraMoedaReal = mascaraMoedaReal;
   monthTranslatedNames = monthTranslatedNames;
   purchaseUtils = PurchaseUtils;
   purchases: PurchaseModel[] = [];
