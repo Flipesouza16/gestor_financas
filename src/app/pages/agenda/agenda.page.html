@@ -61,6 +61,7 @@
       ></app-agenda-card>
       <ion-item-options side="end">
         <ion-button
+          [disabled]="checkIfThisInvoiceExistsInTheLastMonth(purchase)"
           slot="end"
           shape="round"
           fill="outline"

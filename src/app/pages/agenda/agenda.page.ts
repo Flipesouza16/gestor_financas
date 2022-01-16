@@ -138,6 +138,25 @@ export class AgendaPage implements OnInit {
     }
   }
 
+  checkIfThisInvoiceExistsInTheLastMonth(currentPpurchase: PurchaseModel) {
+    let indexPreviousMonth = this.currentMonthIndex - 1;
+    let isThisInvoiceExistsInTheLastMonth = false;
+
+    if(indexPreviousMonth < 0) {
+      indexPreviousMonth = 11;
+    }
+
+    for(const purchase of this.listPurchasesByMonth[monthNames[indexPreviousMonth]]) {
+      if(currentPpurchase.hash === purchase.hash) {
+        console.log('esta fatura existe no mes passado');
+        isThisInvoiceExistsInTheLastMonth = true;
+        break;
+      }
+    }
+
+   return isThisInvoiceExistsInTheLastMonth;
+  }
+
   async loadListOfBuyersNamesIfExists() {
     const { value } = await Storage.get({
       key: 'list-of-buyers-names',
