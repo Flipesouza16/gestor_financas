@@ -315,10 +315,15 @@ export class AgendaPage implements OnInit {
   async editPurchase(payloadPurchase: PurchaseModel) {
     let isPurchaseOfPreviousMonth = false;
 
-    if(payloadPurchase.month === monthNames[this.currentMonthIndex]) {
-      console.log('aqui igual');
-      isPurchaseOfPreviousMonth = true;
+    // check if there is an invoice for this purchase in the current month
+    if(this.listPurchasesByMonth[monthNames[this.currentMonthIndex]]) {
+      for(const purchase of this.listPurchasesByMonth[monthNames[this.currentMonthIndex]]) {
+        if(purchase.hash === payloadPurchase.hash) {
+          isPurchaseOfPreviousMonth = true;
+        }
+      }
     }
+
     const modal = await this.modalCtrl.create({
       component: RegistrationFormComponent,
       componentProps: {
