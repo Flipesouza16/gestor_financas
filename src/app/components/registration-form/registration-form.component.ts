@@ -10,6 +10,7 @@ import PurchaseUtils from 'src/app/utils/purchaseUtils';
 import { generateHash } from '../../utils/utils';
 import { ListOfWhoIsBuyingComponent } from '../list-of-who-is-buying/list-of-who-is-buying.component';
 import { Storage } from '@capacitor/storage';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-registration-form',
@@ -36,6 +37,7 @@ export class RegistrationFormComponent implements OnInit {
     purchaseValue: 0,
     installmentAmount: 0,
     totalInstallments: 0,
+    dueDate: '',
   };
 
   constructor(
@@ -56,6 +58,12 @@ export class RegistrationFormComponent implements OnInit {
     }
 
     this.loadListOfBuyersNamesIfExists();
+  }
+
+  getDate(event) {
+    const date = event.target.value;
+    const formattedDate = moment(date).format('YYYY-MM-DD');
+    this.payloadRegistrationForm.dueDate = formattedDate;
   }
 
   async loadListOfBuyersNamesIfExists() {

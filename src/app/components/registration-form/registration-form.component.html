@@ -106,6 +106,10 @@
             <ion-select-option value="12">12x</ion-select-option>
           </ion-select>
         </ion-item>
+        <ion-item>
+          <ion-label position="floating">Vencimento da compra</ion-label>
+          <ion-datetime displayFormat="DD/MM/YYYY" (ionChange)="getDate($event)"></ion-datetime>
+        </ion-item>
       </ion-list>
     </ion-card-content>
   </ion-card>

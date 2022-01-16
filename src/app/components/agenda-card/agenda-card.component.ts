@@ -15,9 +15,11 @@ export class AgendaCardComponent implements OnInit {
   @Input() isLatePurchasePayment: boolean;
   @Input() purchaseInstallments: number;
   @Input() buyer: string;
+  @Input() dueDate: string;
 
   @Output() paid = new EventEmitter();
 
+  dueDateFormatted: string;
   purchaseUtils = PurchaseUtils;
 
   purchaseValueFormatted: string;
@@ -30,6 +32,10 @@ export class AgendaCardComponent implements OnInit {
       this.purchaseUtils.formatvalueAccordingToTheAmountOfZerosAtTheEnd(
         String(this.purchaseValue)
       );
+
+    if(this.dueDate) {
+      this.dueDateFormatted = this.dueDate.split('-').reverse().join('/');
+    }
   }
 
   async pay() {

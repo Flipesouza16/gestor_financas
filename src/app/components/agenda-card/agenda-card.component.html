@@ -5,24 +5,31 @@
         >{{ purchaseTitle }} - <b>{{ buyer }}</b></ion-card-subtitle
       >
     </ion-card-header>
-    <ion-card-content class="content">
-      <ion-card-title
-        >R$ {{ mascaraMoedaReal(purchaseValueFormatted) }}
-        <b>{{ purchaseInstallments }}x</b></ion-card-title
-      >
-      <ion-chip color="success" *ngIf="isPurchasePaid">
-        <ion-label>Pago</ion-label>
-      </ion-chip>
-      <ion-chip
-        color="warning"
-        *ngIf="!isPurchasePaid && !isLatePurchasePayment"
-        (click)="pay()"
-      >
-        <ion-label>A Pagar</ion-label>
-      </ion-chip>
-      <ion-chip color="danger" *ngIf="!isPurchasePaid && isLatePurchasePayment" (click)="pay()">
-        <ion-label>Atrasado</ion-label>
-      </ion-chip>
+    <ion-card-content>
+      <div class="content">
+        <ion-card-title
+          >R$ {{ mascaraMoedaReal(purchaseValueFormatted) }}
+          <b>{{ purchaseInstallments }}x</b></ion-card-title
+        >
+        <ion-chip color="success" *ngIf="isPurchasePaid">
+          <ion-label>Pago</ion-label>
+        </ion-chip>
+        <ion-chip
+          color="warning"
+          *ngIf="!isPurchasePaid && !isLatePurchasePayment"
+          (click)="pay()"
+        >
+          <ion-label>A Pagar</ion-label>
+        </ion-chip>
+        <ion-chip
+          color="danger"
+          *ngIf="!isPurchasePaid && isLatePurchasePayment"
+          (click)="pay()"
+        >
+          <ion-label>Atrasado</ion-label>
+        </ion-chip>
+      </div>
+      <span *ngIf="dueDate" class="due-date">{{ dueDateFormatted }}</span>
     </ion-card-content>
   </ion-card>
 </ion-item>

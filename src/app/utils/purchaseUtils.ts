@@ -20,6 +20,7 @@ const adapterPurchaseData = ({
       totalInstallments: payloadPurchaseRegistration.totalInstallments,
       isLate: false,
       isPaid: false,
+      dueDate: payloadPurchaseRegistration.dueDate,
     };
     return purchaseAdapted;
   } else if (payloadPurchaseModel) {
@@ -31,6 +32,7 @@ const adapterPurchaseData = ({
       personWhoIsBuying: payloadPurchaseModel.buyer,
       installmentAmount: payloadPurchaseModel.installmentAmount,
       totalInstallments: payloadPurchaseModel.totalInstallments,
+      dueDate: payloadPurchaseModel.dueDate,
     };
     return purchaseAdapted;
   }

@@ -56,6 +56,7 @@
         [isPurchasePaid]="purchase.isPaid"
         [isLatePurchasePayment]="purchase.isLate"
         [purchaseInstallments]="purchase.installments"
+        [dueDate]="purchase.dueDate"
         (paid)="purchasePaid($event, purchase)"
       ></app-agenda-card>
       <ion-item-options side="end">
