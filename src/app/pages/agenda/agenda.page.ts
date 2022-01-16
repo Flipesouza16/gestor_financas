@@ -394,8 +394,9 @@ export class AgendaPage implements OnInit {
         this.checkIfThereIsAnInvoiceForThePreviousMonth();
         this.checkTotalAmountOfCurrentMonthsInstallments();
         this.ref.tick();
-        await this.savePurchases();
       }
+
+      await this.savePurchases();
     }
   }
 
