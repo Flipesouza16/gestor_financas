@@ -42,7 +42,7 @@ export class RegistrationFormComponent implements OnInit {
 
   constructor(
     private modalCtrl: ModalController,
-    private utilsCtrl: UtilsService
+    private utilsCtrl: UtilsService,
   ) {}
 
   ngOnInit() {
@@ -60,9 +60,8 @@ export class RegistrationFormComponent implements OnInit {
     this.loadListOfBuyersNamesIfExists();
   }
 
-  getDate(event) {
-    const date = event.target.value;
-    const formattedDate = moment(date).format('YYYY-MM-DD');
+  getDate(date) {
+    const formattedDate = moment(date).format('DD');
     this.payloadRegistrationForm.dueDate = formattedDate;
   }
 

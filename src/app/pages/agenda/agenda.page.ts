@@ -8,7 +8,11 @@ import {
 import { Storage } from '@capacitor/storage';
 import PurchaseUtils from '../../utils/purchaseUtils';
 import { UtilsService } from 'src/app/services/utils/utils.service';
-import { mascaraMoedaReal, monthNames, monthTranslatedNames } from '../../utils/utils';
+import {
+  mascaraMoedaReal,
+  monthNames,
+  monthTranslatedNames,
+} from '../../utils/utils';
 import { ListOfWhoIsBuyingComponent } from 'src/app/components/list-of-who-is-buying/list-of-who-is-buying.component';
 @Component({
   selector: 'app-agenda',
@@ -53,7 +57,7 @@ export class AgendaPage implements OnInit {
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private utilsCtrl: UtilsService,
-    private ref: ApplicationRef,
+    private ref: ApplicationRef
   ) {}
 
   async ngOnInit() {
@@ -73,8 +77,10 @@ export class AgendaPage implements OnInit {
 
     let allPurchasesByMonth: PurchaseModel[];
 
-    if(this.filterNameWhoIsBuying && this.filterNameWhoIsBuying !== 'Todos') {
-      allPurchasesByMonth = this.listPurchasesByMonth[this.selectedMonth].filter(purchase => purchase.buyer === this.filterNameWhoIsBuying);
+    if (this.filterNameWhoIsBuying && this.filterNameWhoIsBuying !== 'Todos') {
+      allPurchasesByMonth = this.listPurchasesByMonth[
+        this.selectedMonth
+      ].filter((purchase) => purchase.buyer === this.filterNameWhoIsBuying);
     } else {
       allPurchasesByMonth = this.listPurchasesByMonth[this.selectedMonth];
     }
@@ -139,7 +145,7 @@ export class AgendaPage implements OnInit {
 
     if (value) {
       this.listOfBuyersNames = JSON.parse(value);
-      console.log('this.listOfBuyersNames: ',this.listOfBuyersNames);
+      console.log('this.listOfBuyersNames: ', this.listOfBuyersNames);
     }
   }
 
@@ -150,22 +156,21 @@ export class AgendaPage implements OnInit {
       backdropDismiss: true,
       componentProps: {
         listOfBuyersNames: this.listOfBuyersNames,
-        isFilter: true
+        isFilter: true,
       },
     });
 
     await modal.present();
 
     const { data: name } = await modal.onDidDismiss();
-    if(name) {
+    if (name) {
       this.filterNameWhoIsBuying = name;
       this.checkTotalAmountOfCurrentMonthsInstallments();
-      if(name === 'Eu') {
+      if (name === 'Eu') {
         this.titleBuyerDebts = 'Minhas compras';
-      } else if(name === 'Todos') {
+      } else if (name === 'Todos') {
         this.titleBuyerDebts = 'Todas as compras';
-      }
-       else {
+      } else {
         this.titleBuyerDebts = `Compras de ${name}`;
       }
     }
@@ -182,6 +187,7 @@ export class AgendaPage implements OnInit {
 
       let isAllInstallmentHaveBeenPaid = true;
 
+      // if more than a month has passed, leave the purchase as overdue
       if (
         this.listPurchasesByMonth[previousMonthName]?.length &&
         indexPreviousMonth !== this.currentMonthIndex
@@ -307,6 +313,12 @@ export class AgendaPage implements OnInit {
   }
 
   async editPurchase(payloadPurchase: PurchaseModel) {
+    let isPurchaseOfPreviousMonth = false;
+
+    if(payloadPurchase.month === monthNames[this.currentMonthIndex]) {
+      console.log('aqui igual');
+      isPurchaseOfPreviousMonth = true;
+    }
     const modal = await this.modalCtrl.create({
       component: RegistrationFormComponent,
       componentProps: {
@@ -323,7 +335,7 @@ export class AgendaPage implements OnInit {
         payloadPurchaseRegistration: data,
       }) as PurchaseModel;
 
-      this.backToStart(payloadPurchase);
+      this.backToStart(payloadPurchase, isPurchaseOfPreviousMonth);
 
       payload.month = monthNames[this.nextMonthIndex];
 
@@ -525,7 +537,7 @@ export class AgendaPage implements OnInit {
     const indexNextMonth = this.nextMonthIndex + 1;
     const indexPreviousMonth = this.nextMonthIndex - 1;
 
-    if(this.listPurchasesByMonth[monthNames[indexNextMonth]]?.length) {
+    if (this.listPurchasesByMonth[monthNames[indexNextMonth]]?.length) {
       for (const nextsPurchase of this.listPurchasesByMonth[
         monthNames[indexNextMonth]
       ]) {
@@ -536,7 +548,7 @@ export class AgendaPage implements OnInit {
       }
     }
 
-    if(this.listPurchasesByMonth[monthNames[indexPreviousMonth]]?.length) {
+    if (this.listPurchasesByMonth[monthNames[indexPreviousMonth]]?.length) {
       for (const previousPurchase of this.listPurchasesByMonth[
         monthNames[indexPreviousMonth]
       ]) {
@@ -547,12 +559,11 @@ export class AgendaPage implements OnInit {
       }
     }
 
-
     return existAnotherInstallment;
   }
 
-  backToStart(purchase: PurchaseModel) {
-    this.nextMonthIndex = this.currentMonthIndex + 1;
+  backToStart(purchase: PurchaseModel, isPurchaseOfPreviousMonth = false) {
+    this.nextMonthIndex = isPurchaseOfPreviousMonth ? this.currentMonthIndex : this.currentMonthIndex + 1;
     this.isAnInvoiceForThePreviousMonth = false;
 
     if (this.nextMonthIndex > 11) {

@@ -33,7 +33,7 @@
             placeholder="Preencha o nome da pessoa"
             [(ngModel)]="payloadRegistrationForm.personWhoIsBuying"
             (click)="!isAnotherPersonWhoIsBuying && openAlertAboutWhoIsBuying()"
-            (ionBlur)="isAnotherPersonWhoIsBuying = false;"
+            (ionBlur)="isAnotherPersonWhoIsBuying = false"
           ></ion-input>
         </ion-item>
 
@@ -107,8 +107,20 @@
           </ion-select>
         </ion-item>
         <ion-item>
-          <ion-label position="floating">Vencimento da compra</ion-label>
-          <ion-datetime displayFormat="DD/MM/YYYY" (ionChange)="getDate($event)"></ion-datetime>
+          <ion-label position="floating"
+            >Vencimento da compra
+            {{
+              payloadRegistrationForm?.dueDate && !popoverDatetime.value
+                ? " Dia: " + payloadRegistrationForm.dueDate
+                : ""
+            }}</ion-label
+          >
+          <ion-datetime
+            #popoverDatetime
+            displayFormat="DD"
+            (ionChange)="getDate(popoverDatetime.value)"
+          >
+          </ion-datetime>
         </ion-item>
       </ion-list>
     </ion-card-content>
