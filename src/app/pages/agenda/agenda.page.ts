@@ -31,6 +31,7 @@ export class AgendaPage implements OnInit {
   currentMonthIndex: number;
   selectedMonth: string;
   nextMonthIndex: number;
+  todayDate: number;
   listOfBuyersNames: string[] = [];
   filterNameWhoIsBuying = 'Todos';
   titleBuyerDebts = 'Todas as compras';
@@ -61,6 +62,8 @@ export class AgendaPage implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.todayDate = new Date().getDate();
+
     await this.loadSaveData();
     const isSomeLateInstallment = await this.checkForLatePurchaseInvoice();
     if (isSomeLateInstallment) {
@@ -142,19 +145,20 @@ export class AgendaPage implements OnInit {
     let indexPreviousMonth = this.currentMonthIndex - 1;
     let isThisInvoiceExistsInTheLastMonth = false;
 
-    if(indexPreviousMonth < 0) {
+    if (indexPreviousMonth < 0) {
       indexPreviousMonth = 11;
     }
 
-    for(const purchase of this.listPurchasesByMonth[monthNames[indexPreviousMonth]]) {
-      if(currentPpurchase.hash === purchase.hash) {
-        console.log('esta fatura existe no mes passado');
+    for (const purchase of this.listPurchasesByMonth[
+      monthNames[indexPreviousMonth]
+    ]) {
+      if (currentPpurchase.hash === purchase.hash) {
         isThisInvoiceExistsInTheLastMonth = true;
         break;
       }
     }
 
-   return isThisInvoiceExistsInTheLastMonth;
+    return isThisInvoiceExistsInTheLastMonth;
   }
 
   async loadListOfBuyersNamesIfExists() {
@@ -233,6 +237,33 @@ export class AgendaPage implements OnInit {
           if (!previousPurchase.isPaid) {
             totalInstallmentToBePaid++;
             isAllInstallmentHaveBeenPaid = false;
+          }
+          if (previousPurchase.dueDate < this.todayDate) {
+            previousPurchase.isLate = true;
+
+            await this.utilsCtrl.showAlert(
+              `${
+                previousPurchase.buyer === 'Eu'
+                  ? 'Sua fatura '
+                  : 'A fatura de ' + previousPurchase.buyer
+              } - ${previousPurchase.title} está atrasada`
+            );
+          } else if (previousPurchase.dueDate === String(this.todayDate)) {
+            await this.utilsCtrl.showAlert(
+              `${
+                previousPurchase.buyer === 'Eu'
+                  ? 'Sua fatura '
+                  : 'A fatura de ' + previousPurchase.buyer
+              } - ${previousPurchase.title} vence hoje`
+            );
+          } else if (previousPurchase.dueDate - this.todayDate === 1) {
+            await this.utilsCtrl.showAlert(
+              `${
+                previousPurchase.buyer === 'Eu'
+                  ? 'Sua fatura '
+                  : 'A fatura de ' + previousPurchase.buyer
+              } - ${previousPurchase.title} vence amanhã`
+            );
           }
         }
 
@@ -335,9 +366,11 @@ export class AgendaPage implements OnInit {
     let isPurchaseOfPreviousMonth = false;
 
     // check if there is an invoice for this purchase in the current month
-    if(this.listPurchasesByMonth[monthNames[this.currentMonthIndex]]) {
-      for(const purchase of this.listPurchasesByMonth[monthNames[this.currentMonthIndex]]) {
-        if(purchase.hash === payloadPurchase.hash) {
+    if (this.listPurchasesByMonth[monthNames[this.currentMonthIndex]]) {
+      for (const purchase of this.listPurchasesByMonth[
+        monthNames[this.currentMonthIndex]
+      ]) {
+        if (purchase.hash === payloadPurchase.hash) {
           isPurchaseOfPreviousMonth = true;
         }
       }
@@ -587,7 +620,9 @@ export class AgendaPage implements OnInit {
   }
 
   backToStart(purchase: PurchaseModel, isPurchaseOfPreviousMonth = false) {
-    this.nextMonthIndex = isPurchaseOfPreviousMonth ? this.currentMonthIndex : this.currentMonthIndex + 1;
+    this.nextMonthIndex = isPurchaseOfPreviousMonth
+      ? this.currentMonthIndex
+      : this.currentMonthIndex + 1;
     this.isAnInvoiceForThePreviousMonth = false;
 
     if (this.nextMonthIndex > 11) {
