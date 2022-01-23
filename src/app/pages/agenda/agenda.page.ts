@@ -14,6 +14,7 @@ import {
   monthTranslatedNames,
 } from '../../utils/utils';
 import { ListOfWhoIsBuyingComponent } from 'src/app/components/list-of-who-is-buying/list-of-who-is-buying.component';
+import { AuthService } from 'src/app/services/auth/auth.service';
 @Component({
   selector: 'app-agenda',
   templateUrl: './agenda.page.html',
@@ -58,7 +59,8 @@ export class AgendaPage implements OnInit {
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
     private utilsCtrl: UtilsService,
-    private ref: ApplicationRef
+    private ref: ApplicationRef,
+    private authService: AuthService,
   ) {}
 
   async ngOnInit() {
@@ -97,6 +99,28 @@ export class AgendaPage implements OnInit {
           purchase.installmentAmount;
       }
     }
+  }
+
+  async logout() {
+    console.log('aqaqaq');
+
+    const alert = await this.alertCtrl.create({
+      header: 'Sair',
+      subHeader: 'Tem certeza que deseja sair?',
+      buttons: [
+        {
+          text: 'Cancelar'
+        },
+        {
+          text: 'Sim',
+          handler: () => {
+            this.authService.logout();
+          }
+        }
+      ]
+    });
+
+    await alert.present();
   }
 
   async loadSaveData() {

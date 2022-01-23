@@ -1,0 +1,23 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="end">
+      <ion-button (click)="dismiss()">FECHAR</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div style="margin: 20px; border-radius: 25px; bottom: 0; margin-top: 50%">
+    <ion-item style="margin: 10px">
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="payloadLoginRegister.email"></ion-input>
+    </ion-item>
+    <ion-item style="margin: 10px">
+      <ion-label position="floating">Senha</ion-label>
+      <ion-input type="password" [(ngModel)]="payloadLoginRegister.password"></ion-input>
+    </ion-item>
+  </div>
+
+  <ion-button *ngIf="isRegister" expand="full" style="margin: 30px;" [disabled]="!isButtonValid" (click)="register()">Cadastrar</ion-button>
+  <ion-button *ngIf="!isRegister" expand="full" style="margin: 30px;" [disabled]="!isButtonValid" (click)="login()">Entrar</ion-button>
+</ion-content>

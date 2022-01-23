@@ -1,6 +1,13 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>Agenda de {{ monthTranslatedNames[selectedMonth] }}</ion-title>
+    <ion-row>
+      <ion-title>Agenda de {{ monthTranslatedNames[selectedMonth] }}</ion-title>
+      <ion-icon
+        (click)="logout()"
+        style="font-size: 35px"
+        name="log-in"
+      ></ion-icon>
+    </ion-row>
 
     <div class="debtsOfMonth">
       <span>{{ titleBuyerDebts }} </span>
