@@ -1,16 +1,16 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AuthService } from '../services/auth/auth.service';
+import { Auth, onAuthStateChanged } from '@angular/fire/auth';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LoginGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private auth: Auth, private router: Router) {}
 
   canActivate(): Promise<boolean> {
     return new Promise(resolve => {
-      this.authService.getAuth().onAuthStateChanged(user => {
+      onAuthStateChanged(this.auth, user => {
         if(user) {
           this.router.navigate(['agenda']);
         }

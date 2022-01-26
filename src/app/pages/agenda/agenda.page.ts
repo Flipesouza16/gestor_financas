@@ -102,10 +102,8 @@ export class AgendaPage implements OnInit {
   }
 
   async logout() {
-    console.log('aqaqaq');
-
     const alert = await this.alertCtrl.create({
-      header: 'Sair',
+      header: 'Sair da conta',
       subHeader: 'Tem certeza que deseja sair?',
       buttons: [
         {
@@ -113,8 +111,8 @@ export class AgendaPage implements OnInit {
         },
         {
           text: 'Sim',
-          handler: () => {
-            this.authService.logout();
+          handler: async () => {
+            await this.authService.logout();
           }
         }
       ]
