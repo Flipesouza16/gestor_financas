@@ -4,7 +4,7 @@ import {
   ModalController,
   ToastController,
 } from '@ionic/angular';
-import { User } from 'src/app/interfaces/user';
+import { UserModel } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth/auth.service';
 
 @Component({
@@ -14,7 +14,8 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 })
 export class LoginRegisterComponent implements OnInit {
   isRegister: boolean;
-  payloadLoginRegister: User = {
+  payloadLoginRegister: UserModel = {
+    name: '',
     email: '',
     password: '',
   };
@@ -27,10 +28,7 @@ export class LoginRegisterComponent implements OnInit {
     private authService: AuthService
   ) {}
 
-  ngOnInit() {
-    console.log('isRegister: ', this.isRegister);
-    console.log('payloadLoginRegister: ', this.payloadLoginRegister);
-  }
+  ngOnInit() {}
 
   async login() {
     await this.presentLoading();

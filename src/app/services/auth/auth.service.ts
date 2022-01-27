@@ -1,22 +1,58 @@
 import { Injectable } from '@angular/core';
-// import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { User } from 'src/app/interfaces/user';
+import { UserModel } from 'src/app/interfaces/user';
 import { Auth } from '@angular/fire/auth';
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth';
+import { UserDataService } from '../data/userData.service';
+import { Storage } from '@capacitor/storage';
+import { Subject } from 'rxjs';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthService {
 
-  constructor(private auth: Auth) { }
+  observerUsers = new Subject();
 
-  async login(user: User) {
-    return await signInWithEmailAndPassword(this.auth, user.email, user.password);
+  constructor(private auth: Auth, private userDataService: UserDataService) {}
+
+  async login(user: UserModel) {
+    await signInWithEmailAndPassword(this.auth, user.email, user.password);
+    this.saveAndLoadCurrentUsersPurchases(user);
   }
 
-  async register(user: User) {
-    return await createUserWithEmailAndPassword(this.auth, user.email, user.password);
+  saveAndLoadCurrentUsersPurchases(user: UserModel) {
+    this.userDataService.getUsers().subscribe(async (users: UserModel[]) => {
+      const userLogged: UserModel = users.filter(
+        (userRegistered) => userRegistered.email === user.email
+      )[0] as UserModel;
+
+      console.log('apos fazer login: ',userLogged);
+
+      await Storage.set({
+        key: 'user-logged',
+        value: JSON.stringify(userLogged),
+      });
+
+      await Storage.set({
+        key: 'list-purchases-by-month',
+        value: userLogged.purchases,
+      });
+
+      this.observerUsers.next(userLogged);
+    });
+  }
+
+  getObserverUser() {
+    return this.observerUsers.asObservable();
+  }
+
+  async register(user: UserModel) {
+    await createUserWithEmailAndPassword(this.auth, user.email, user.password);
+    return this.userDataService.addUser(user);
   }
 
   async logout() {

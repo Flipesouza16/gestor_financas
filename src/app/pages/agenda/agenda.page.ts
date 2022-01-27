@@ -15,6 +15,8 @@ import {
 } from '../../utils/utils';
 import { ListOfWhoIsBuyingComponent } from 'src/app/components/list-of-who-is-buying/list-of-who-is-buying.component';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { UserDataService } from 'src/app/services/data/userData.service';
+import { UserModel } from 'src/app/interfaces/user';
 @Component({
   selector: 'app-agenda',
   templateUrl: './agenda.page.html',
@@ -54,6 +56,7 @@ export class AgendaPage implements OnInit {
     november: [],
     december: [],
   };
+  userLogged: UserModel;
 
   constructor(
     private modalCtrl: ModalController,
@@ -61,10 +64,22 @@ export class AgendaPage implements OnInit {
     private utilsCtrl: UtilsService,
     private ref: ApplicationRef,
     private authService: AuthService,
-  ) {}
+    private userDataService: UserDataService,
+  ) {
+    this.authService.getObserverUser().subscribe(async observerUser => {
+      if(observerUser) {
+        await this.initializePurchases();
+      }
+    });
+  }
 
   async ngOnInit() {
+    await this.initializePurchases();
+  }
+
+  async initializePurchases() {
     this.todayDate = new Date().getDate();
+    this.userLogged = await this.userDataService.getCurrentUserByStorage();
 
     await this.loadSaveData();
     const isSomeLateInstallment = await this.checkForLatePurchaseInvoice();
@@ -122,6 +137,8 @@ export class AgendaPage implements OnInit {
   }
 
   async loadSaveData() {
+    console.log('loadSaveData');
+
     this.currentMonthIndex = new Date().getMonth();
 
     this.nextMonthIndex = this.currentMonthIndex + 1;
@@ -134,7 +151,8 @@ export class AgendaPage implements OnInit {
     this.selectedMonth = this.nextMonth;
 
     const { value } = await Storage.get({ key: 'list-purchases-by-month' });
-    if (value) {
+
+    if (value?.length) {
       this.listPurchasesByMonth = JSON.parse(value);
 
       this.purchases = JSON.parse(
@@ -539,6 +557,9 @@ export class AgendaPage implements OnInit {
       key: 'list-purchases-by-month',
       value: JSON.stringify(this.listPurchasesByMonth),
     });
+
+    this.userLogged.purchases = JSON.stringify(this.listPurchasesByMonth);
+    this.userDataService.updateUser(this.userLogged);
   }
 
   async removePurchase(purchaseToRemove: PurchaseModel) {
