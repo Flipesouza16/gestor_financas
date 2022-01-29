@@ -50,7 +50,7 @@
 </ion-header>
 
 <ion-content>
-  <ion-list lines="none">
+  <ion-list lines="none" *ngIf="listPurchasesByMonth">
     <ion-item-sliding
       color="danger"
       *ngFor="let purchase of listPurchasesByMonth[selectedMonth]"

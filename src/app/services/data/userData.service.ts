@@ -10,8 +10,6 @@ import { UserModel } from 'src/app/interfaces/user';
 
 export class UserDataService {
 
-  observerUsers = new Subject();
-
   constructor(private firestore: Firestore) { }
 
   async getCurrentUserByStorage() {
@@ -19,7 +17,12 @@ export class UserDataService {
       key: 'user-logged'
     });
 
-    return JSON.parse(user);
+    if(user !== 'undefined') {
+      console.log('user: ',user);
+      return JSON.parse(user);
+    } else {
+      return;
+    }
   }
 
   getUsers() {

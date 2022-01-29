@@ -8,55 +8,44 @@ import {
 } from 'firebase/auth';
 import { UserDataService } from '../data/userData.service';
 import { Storage } from '@capacitor/storage';
-import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
 
-  observerUsers = new Subject();
+  userCredentials: UserModel;
 
   constructor(private auth: Auth, private userDataService: UserDataService) {}
 
   async login(user: UserModel) {
     await signInWithEmailAndPassword(this.auth, user.email, user.password);
-    this.saveAndLoadCurrentUsersPurchases(user);
+    this.userCredentials = user;
   }
 
-  saveAndLoadCurrentUsersPurchases(user: UserModel) {
-    this.userDataService.getUsers().subscribe(async (users: UserModel[]) => {
-      const userLogged: UserModel = users.filter(
-        (userRegistered) => userRegistered.email === user.email
-      )[0] as UserModel;
+  async saveAndLoadCurrentUsersPurchases(userLogged: UserModel) {
+    await Storage.set({
+      key: 'user-logged',
+      value: JSON.stringify(userLogged),
+    });
 
-      console.log('apos fazer login: ',userLogged);
-
-      await Storage.set({
-        key: 'user-logged',
-        value: JSON.stringify(userLogged),
-      });
-
+    if(userLogged?.purchases?.length) {
       await Storage.set({
         key: 'list-purchases-by-month',
         value: userLogged.purchases,
       });
-
-      this.observerUsers.next(userLogged);
-    });
-  }
-
-  getObserverUser() {
-    return this.observerUsers.asObservable();
+    }
   }
 
   async register(user: UserModel) {
     await createUserWithEmailAndPassword(this.auth, user.email, user.password);
+    this.userCredentials = user;
     return this.userDataService.addUser(user);
   }
 
   async logout() {
-    return await signOut(this.auth);
+    await Storage.clear();
+    return signOut(this.auth);
   }
 
   getAuth() {

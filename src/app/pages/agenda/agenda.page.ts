@@ -1,4 +1,4 @@
-import { ApplicationRef, Component, OnInit } from '@angular/core';
+import { ApplicationRef, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { AlertController, ModalController } from '@ionic/angular';
 import { RegistrationFormComponent } from 'src/app/components/registration-form/registration-form.component';
 import {
@@ -17,6 +17,7 @@ import { ListOfWhoIsBuyingComponent } from 'src/app/components/list-of-who-is-bu
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { UserDataService } from 'src/app/services/data/userData.service';
 import { UserModel } from 'src/app/interfaces/user';
+import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-agenda',
   templateUrl: './agenda.page.html',
@@ -58,6 +59,8 @@ export class AgendaPage implements OnInit {
   };
   userLogged: UserModel;
 
+  subscriptionUserObserver: Subscription;
+
   constructor(
     private modalCtrl: ModalController,
     private alertCtrl: AlertController,
@@ -65,10 +68,24 @@ export class AgendaPage implements OnInit {
     private ref: ApplicationRef,
     private authService: AuthService,
     private userDataService: UserDataService,
+    private changeDetectorRef: ChangeDetectorRef,
   ) {
-    this.authService.getObserverUser().subscribe(async observerUser => {
-      if(observerUser) {
+    this.subscriptionUserObserver = this.userDataService.getUsers().subscribe(async users => {
+      if(users) {
+        console.log('users: ',users);
+        const currentUserCredentials = this.userLogged ? this.userLogged : this.authService.userCredentials;
+        console.log('currentUserCredentials: ',currentUserCredentials);
+
+        const userLogged = users.filter(
+          (userRegistered) => userRegistered.email === currentUserCredentials?.email
+        )[0] as UserModel;
+
+        console.log('userLogged: ',userLogged);
+
+        this.ref.tick();
+        await this.authService.saveAndLoadCurrentUsersPurchases(userLogged);
         await this.initializePurchases();
+        this.changeDetectorRef.detectChanges();
       }
     });
   }
@@ -80,6 +97,7 @@ export class AgendaPage implements OnInit {
   async initializePurchases() {
     this.todayDate = new Date().getDate();
     this.userLogged = await this.userDataService.getCurrentUserByStorage();
+    console.log('this.userLogged: ',this.userLogged);
 
     await this.loadSaveData();
     const isSomeLateInstallment = await this.checkForLatePurchaseInvoice();
@@ -97,21 +115,23 @@ export class AgendaPage implements OnInit {
 
     let allPurchasesByMonth: PurchaseModel[];
 
-    if (this.filterNameWhoIsBuying && this.filterNameWhoIsBuying !== 'Todos') {
-      allPurchasesByMonth = this.listPurchasesByMonth[
-        this.selectedMonth
-      ].filter((purchase) => purchase.buyer === this.filterNameWhoIsBuying);
-    } else {
-      allPurchasesByMonth = this.listPurchasesByMonth[this.selectedMonth];
-    }
+    if(this.listPurchasesByMonth) {
+      if (this.filterNameWhoIsBuying && this.filterNameWhoIsBuying !== 'Todos') {
+        allPurchasesByMonth = this.listPurchasesByMonth[
+          this.selectedMonth
+        ].filter((purchase) => purchase.buyer === this.filterNameWhoIsBuying);
+      } else {
+        allPurchasesByMonth = this.listPurchasesByMonth[this.selectedMonth];
+      }
 
-    for (const purchase of allPurchasesByMonth) {
-      this.amountOfCurrentMonthsInstallments.totalToPay +=
-        purchase.installmentAmount;
-
-      if (purchase.isPaid) {
-        this.amountOfCurrentMonthsInstallments.totalAlreadyPaid +=
+      for (const purchase of allPurchasesByMonth) {
+        this.amountOfCurrentMonthsInstallments.totalToPay +=
           purchase.installmentAmount;
+
+        if (purchase.isPaid) {
+          this.amountOfCurrentMonthsInstallments.totalAlreadyPaid +=
+            purchase.installmentAmount;
+        }
       }
     }
   }
@@ -127,6 +147,7 @@ export class AgendaPage implements OnInit {
         {
           text: 'Sim',
           handler: async () => {
+            this.subscriptionUserObserver.unsubscribe();
             await this.authService.logout();
           }
         }
@@ -137,8 +158,6 @@ export class AgendaPage implements OnInit {
   }
 
   async loadSaveData() {
-    console.log('loadSaveData');
-
     this.currentMonthIndex = new Date().getMonth();
 
     this.nextMonthIndex = this.currentMonthIndex + 1;
@@ -152,12 +171,15 @@ export class AgendaPage implements OnInit {
 
     const { value } = await Storage.get({ key: 'list-purchases-by-month' });
 
-    if (value?.length) {
+    if (value !== 'undefined' && value?.length) {
       this.listPurchasesByMonth = JSON.parse(value);
 
-      this.purchases = JSON.parse(
-        JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
-      );
+      if(this.listPurchasesByMonth) {
+        this.purchases = JSON.parse(
+          JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
+        );
+        console.log('this.purchases: ',this.purchases);
+      }
     }
     this.checkIfThereIsAnInvoiceForTheNextMonth();
   }
@@ -208,7 +230,6 @@ export class AgendaPage implements OnInit {
 
     if (value) {
       this.listOfBuyersNames = JSON.parse(value);
-      console.log('this.listOfBuyersNames: ', this.listOfBuyersNames);
     }
   }
 
@@ -252,7 +273,7 @@ export class AgendaPage implements OnInit {
 
       // if more than a month has passed, leave the purchase as overdue
       if (
-        this.listPurchasesByMonth[previousMonthName]?.length &&
+        this.listPurchasesByMonth && this.listPurchasesByMonth[previousMonthName]?.length &&
         indexPreviousMonth !== this.currentMonthIndex
       ) {
         for (const previousPurchase of this.listPurchasesByMonth[
@@ -267,7 +288,7 @@ export class AgendaPage implements OnInit {
       }
 
       if (
-        this.listPurchasesByMonth[previousMonthName]?.length &&
+        this.listPurchasesByMonth && this.listPurchasesByMonth[previousMonthName]?.length &&
         indexPreviousMonth === this.currentMonthIndex
       ) {
         let totalInstallmentToBePaid = 0;
@@ -338,10 +359,10 @@ export class AgendaPage implements OnInit {
         indexPreviousMonth = 11;
       }
 
-      if (this.listPurchasesByMonth[previousMonthName]?.length) {
+      if (this.listPurchasesByMonth && this.listPurchasesByMonth[previousMonthName]?.length) {
         isPreviousPurchase = true;
       }
-    } while (this.listPurchasesByMonth[previousMonthName]?.length);
+    } while (this.listPurchasesByMonth && this.listPurchasesByMonth[previousMonthName]?.length);
 
     return isPreviousPurchase;
   }
@@ -558,6 +579,13 @@ export class AgendaPage implements OnInit {
       value: JSON.stringify(this.listPurchasesByMonth),
     });
 
+    if(!this.userLogged?.purchases) {
+      this.userLogged = {
+        ...this.userLogged,
+        purchases: ''
+      };
+    }
+
     this.userLogged.purchases = JSON.stringify(this.listPurchasesByMonth);
     this.userDataService.updateUser(this.userLogged);
   }
@@ -663,22 +691,24 @@ export class AgendaPage implements OnInit {
   }
 
   backToStart(purchase: PurchaseModel, isPurchaseOfPreviousMonth = false) {
-    this.nextMonthIndex = isPurchaseOfPreviousMonth
-      ? this.currentMonthIndex
-      : this.currentMonthIndex + 1;
-    this.isAnInvoiceForThePreviousMonth = false;
+    if(this.listPurchasesByMonth) {
+      this.nextMonthIndex = isPurchaseOfPreviousMonth
+        ? this.currentMonthIndex
+        : this.currentMonthIndex + 1;
+      this.isAnInvoiceForThePreviousMonth = false;
 
-    if (this.nextMonthIndex > 11) {
-      this.nextMonthIndex = 0;
-    }
-    this.selectedMonth = monthNames[this.nextMonthIndex];
+      if (this.nextMonthIndex > 11) {
+        this.nextMonthIndex = 0;
+      }
+      this.selectedMonth = monthNames[this.nextMonthIndex];
 
-    this.purchases = JSON.parse(
-      JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
-    );
+      this.purchases = JSON.parse(
+        JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
+      );
 
-    if (purchase.totalInstallments > 1) {
-      this.isAnInvoiceForTheNextMonth = true;
+      if (purchase.totalInstallments > 1) {
+        this.isAnInvoiceForTheNextMonth = true;
+      }
     }
   }
 
@@ -693,10 +723,12 @@ export class AgendaPage implements OnInit {
 
     const nameNextMonth = monthNames[indexNextMonth];
 
-    for (const purchase of this.listPurchasesByMonth[nameNextMonth]) {
-      if (purchase.installments) {
-        this.isAnInvoiceForTheNextMonth = true;
-        break;
+    if(this.listPurchasesByMonth) {
+      for (const purchase of this.listPurchasesByMonth[nameNextMonth]) {
+        if (purchase.installments) {
+          this.isAnInvoiceForTheNextMonth = true;
+          break;
+        }
       }
     }
   }
