@@ -68,3 +68,21 @@ export const generateHash = (length = 16) => {
 
   return retorno + '@' + idUser;
 };
+
+export const getEmptyObjectOfPurchaseByMonth = () => {
+  const purchases = {
+    january: [],
+    february: [],
+    march: [],
+    april: [],
+    may: [],
+    june: [],
+    july: [],
+    august: [],
+    september: [],
+    october: [],
+    november: [],
+    december: [],
+  };
+  return purchases;
+};

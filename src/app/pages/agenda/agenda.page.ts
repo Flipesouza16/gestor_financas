@@ -18,6 +18,7 @@ import { AuthService } from 'src/app/services/auth/auth.service';
 import { UserDataService } from 'src/app/services/data/userData.service';
 import { UserModel } from 'src/app/interfaces/user';
 import { Subscription } from 'rxjs';
+import { getEmptyObjectOfPurchaseByMonth } from '../../utils/utils';
 @Component({
   selector: 'app-agenda',
   templateUrl: './agenda.page.html',
@@ -39,6 +40,7 @@ export class AgendaPage implements OnInit {
   listOfBuyersNames: string[] = [];
   filterNameWhoIsBuying = 'Todos';
   titleBuyerDebts = 'Todas as compras';
+  loadingPurchases;
   amountOfCurrentMonthsInstallments = {
     totalAlreadyPaid: 0,
     totalToPay: 0,
@@ -58,7 +60,6 @@ export class AgendaPage implements OnInit {
     december: [],
   };
   userLogged: UserModel;
-
   subscriptionUserObserver: Subscription;
 
   constructor(
@@ -69,35 +70,52 @@ export class AgendaPage implements OnInit {
     private authService: AuthService,
     private userDataService: UserDataService,
     private changeDetectorRef: ChangeDetectorRef,
+    private utilsService: UtilsService,
   ) {
     this.subscriptionUserObserver = this.userDataService.getUsers().subscribe(async users => {
       if(users) {
+        await this.getUserLoggedAndSaveToStorage(users);
+      }
+    });
+
+    this.authService.getObserverUser().subscribe(async observerUser => {
+      if(this.subscriptionUserObserver.closed && observerUser) {
+        const { value } = await Storage.get({
+          key: 'users',
+        });
+        const users = JSON.parse(value);
         console.log('users: ',users);
-        const currentUserCredentials = this.userLogged ? this.userLogged : this.authService.userCredentials;
-        console.log('currentUserCredentials: ',currentUserCredentials);
 
-        const userLogged = users.filter(
-          (userRegistered) => userRegistered.email === currentUserCredentials?.email
-        )[0] as UserModel;
-
-        console.log('userLogged: ',userLogged);
-
-        this.ref.tick();
-        await this.authService.saveAndLoadCurrentUsersPurchases(userLogged);
-        await this.initializePurchases();
-        this.changeDetectorRef.detectChanges();
+        await this.getUserLoggedAndSaveToStorage(users);
       }
     });
   }
 
   async ngOnInit() {
+    this.loadingPurchases = await this.utilsService.presentLoading();
     await this.initializePurchases();
+    this.loadingPurchases.dismiss();
+  }
+
+  async getUserLoggedAndSaveToStorage(users: UserModel[]) {
+    this.userLogged = await this.userDataService.getCurrentUserByStorage();
+
+    const currentUserCredentials = this.userLogged ? this.userLogged : this.authService.userCredentials;
+
+    const userLogged = users.filter(
+      (userRegistered) => userRegistered.email === currentUserCredentials?.email
+    )[0] as UserModel;
+
+    this.listPurchasesByMonth = getEmptyObjectOfPurchaseByMonth();
+
+    await this.authService.saveAndLoadCurrentUsersPurchases(userLogged);
+    await this.initializePurchases();
+    this.changeDetectorRef.detectChanges();
   }
 
   async initializePurchases() {
     this.todayDate = new Date().getDate();
     this.userLogged = await this.userDataService.getCurrentUserByStorage();
-    console.log('this.userLogged: ',this.userLogged);
 
     await this.loadSaveData();
     const isSomeLateInstallment = await this.checkForLatePurchaseInvoice();
@@ -178,7 +196,6 @@ export class AgendaPage implements OnInit {
         this.purchases = JSON.parse(
           JSON.stringify(this.listPurchasesByMonth[this.selectedMonth])
         );
-        console.log('this.purchases: ',this.purchases);
       }
     }
     this.checkIfThereIsAnInvoiceForTheNextMonth();

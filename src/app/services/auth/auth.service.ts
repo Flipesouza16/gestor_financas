@@ -8,6 +8,7 @@ import {
 } from 'firebase/auth';
 import { UserDataService } from '../data/userData.service';
 import { Storage } from '@capacitor/storage';
+import { Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
@@ -15,11 +16,13 @@ import { Storage } from '@capacitor/storage';
 export class AuthService {
 
   userCredentials: UserModel;
+  observerUser = new Subject();
 
   constructor(private auth: Auth, private userDataService: UserDataService) {}
 
   async login(user: UserModel) {
     await signInWithEmailAndPassword(this.auth, user.email, user.password);
+    this.observerUser.next(user);
     this.userCredentials = user;
   }
 
@@ -39,8 +42,26 @@ export class AuthService {
 
   async register(user: UserModel) {
     await createUserWithEmailAndPassword(this.auth, user.email, user.password);
+
+    const { value } = await Storage.get({
+      key: 'users',
+    });
+
+    const users = JSON.parse(value) as any[];
+    users.push(user);
+
+    await Storage.set({
+      key: 'users',
+      value: JSON.stringify(users)
+    });
+
+    this.observerUser.next(user);
     this.userCredentials = user;
     return this.userDataService.addUser(user);
+  }
+
+  getObserverUser() {
+    return this.observerUser.asObservable();
   }
 
   async logout() {

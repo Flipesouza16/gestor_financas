@@ -6,6 +6,7 @@ import {
 } from '@ionic/angular';
 import { UserModel } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth/auth.service';
+import { UtilsService } from 'src/app/services/utils/utils.service';
 
 @Component({
   selector: 'app-login-register',
@@ -24,14 +25,14 @@ export class LoginRegisterComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private toastCtrl: ToastController,
-    private loadingCtrl: LoadingController,
+    private utilsService: UtilsService,
     private authService: AuthService
   ) {}
 
   ngOnInit() {}
 
   async login() {
-    await this.presentLoading();
+    this.loading = await this.utilsService.presentLoading();
     try {
       await this.authService.login(this.payloadLoginRegister);
       this.dismiss();
@@ -66,7 +67,8 @@ export class LoginRegisterComponent implements OnInit {
   }
 
   async register() {
-    await this.presentLoading();
+    this.loading = await this.utilsService.presentLoading();
+
     try {
       await this.authService.register(this.payloadLoginRegister);
       this.dismiss();
@@ -93,14 +95,6 @@ export class LoginRegisterComponent implements OnInit {
     } finally {
       this.loading.dismiss();
     }
-  }
-
-  async presentLoading() {
-    this.loading = await this.loadingCtrl.create({
-      message: 'Por favor, aguarde...',
-    });
-
-    return await this.loading.present();
   }
 
   async presentToast(message: string) {

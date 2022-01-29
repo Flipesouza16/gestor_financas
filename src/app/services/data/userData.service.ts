@@ -18,7 +18,6 @@ export class UserDataService {
     });
 
     if(user !== 'undefined') {
-      console.log('user: ',user);
       return JSON.parse(user);
     } else {
       return;
