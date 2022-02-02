@@ -94,6 +94,7 @@ export class AgendaPage implements OnInit {
   async ngOnInit() {
     this.loadingPurchases = await this.utilsService.presentLoading();
     await this.initializePurchases();
+    await this.syncLocalDataWithDataBase();
     this.loadingPurchases.dismiss();
   }
 
@@ -103,14 +104,22 @@ export class AgendaPage implements OnInit {
     const currentUserCredentials = this.userLogged ? this.userLogged : this.authService.userCredentials;
 
     const userLogged = users.filter(
-      (userRegistered) => userRegistered.email === currentUserCredentials?.email
-    )[0] as UserModel;
+      userRegistered => userRegistered.email === currentUserCredentials?.email
+    )[0];
 
     this.listPurchasesByMonth = getEmptyObjectOfPurchaseByMonth();
 
     await this.authService.saveAndLoadCurrentUsersPurchases(userLogged);
     await this.initializePurchases();
     this.changeDetectorRef.detectChanges();
+  }
+
+  async syncLocalDataWithDataBase() {
+    this.userLogged = await this.userDataService.getCurrentUserByStorage();
+    if(this.userLogged) {
+      this.userLogged.purchases = JSON.stringify(this.listPurchasesByMonth);
+      this.userDataService.updateUser(this.userLogged);
+    }
   }
 
   async initializePurchases() {
