@@ -48,6 +48,6 @@ export class UserDataService {
     console.log('update user: ',user);
 
     const userDocRef = doc(this.firestore, `users/${user.id}`);
-    return updateDoc(userDocRef, { ...user, purchases: user.purchases });
+    return updateDoc(userDocRef, { ...user, purchases: user?.purchases || '', listOfBuyers: user?.listOfBuyers || '' });
   }
 }

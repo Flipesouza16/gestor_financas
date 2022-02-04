@@ -250,12 +250,8 @@ export class AgendaPage implements OnInit {
   }
 
   async loadListOfBuyersNamesIfExists() {
-    const { value } = await Storage.get({
-      key: 'list-of-buyers-names',
-    });
-
-    if (value) {
-      this.listOfBuyersNames = JSON.parse(value);
+    if (this.userLogged?.listOfBuyers) {
+      this.listOfBuyersNames = JSON.parse(this.userLogged.listOfBuyers);
     }
   }
 
@@ -396,6 +392,9 @@ export class AgendaPage implements OnInit {
   async addNewPurchase() {
     const modal = await this.modalCtrl.create({
       component: RegistrationFormComponent,
+      componentProps: {
+        userLogged: this.userLogged
+      }
     });
 
     await modal.present();
@@ -468,6 +467,7 @@ export class AgendaPage implements OnInit {
       componentProps: {
         isEditing: true,
         payloadPurchase,
+        userLogged: this.userLogged
       },
     });
 

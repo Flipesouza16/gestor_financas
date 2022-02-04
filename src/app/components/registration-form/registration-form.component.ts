@@ -11,6 +11,8 @@ import { generateHash } from '../../utils/utils';
 import { ListOfWhoIsBuyingComponent } from '../list-of-who-is-buying/list-of-who-is-buying.component';
 import { Storage } from '@capacitor/storage';
 import * as moment from 'moment';
+import { UserModel } from 'src/app/interfaces/user';
+import { UserDataService } from 'src/app/services/data/userData.service';
 
 @Component({
   selector: 'app-registration-form',
@@ -22,6 +24,7 @@ export class RegistrationFormComponent implements OnInit {
 
   mascaraMoedaReal = mascaraMoedaReal;
   capitalizeFirstLetter = capitalizeFirstLetter;
+  userLogged: UserModel;
   purchaseUtils = PurchaseUtils;
   isCurrentPurchase = true;
   isEditing = false;
@@ -43,6 +46,7 @@ export class RegistrationFormComponent implements OnInit {
   constructor(
     private modalCtrl: ModalController,
     private utilsCtrl: UtilsService,
+    private userDataService: UserDataService,
   ) {}
 
   ngOnInit() {
@@ -66,12 +70,8 @@ export class RegistrationFormComponent implements OnInit {
   }
 
   async loadListOfBuyersNamesIfExists() {
-    const { value } = await Storage.get({
-      key: 'list-of-buyers-names',
-    });
-
-    if (value) {
-      this.listOfBuyersNames = JSON.parse(value);
+    if (this.userLogged?.listOfBuyers) {
+      this.listOfBuyersNames = JSON.parse(this.userLogged.listOfBuyers);
     }
   }
 
@@ -165,10 +165,21 @@ export class RegistrationFormComponent implements OnInit {
     if (!this.listOfBuyersNames?.includes(personWhoIsBuying)) {
       this.listOfBuyersNames.push(personWhoIsBuying);
 
+      if(!this.userLogged?.listOfBuyers) {
+        this.userLogged = {
+          ...this.userLogged,
+          listOfBuyers: ''
+        };
+      }
+
+      this.userLogged.listOfBuyers = JSON.stringify(this.listOfBuyersNames);
+
       await Storage.set({
-        key: 'list-of-buyers-names',
-        value: JSON.stringify(this.listOfBuyersNames),
+        key: 'user-logged',
+        value: JSON.stringify(this.userLogged)
       });
+
+      this.userDataService.updateUser(this.userLogged);
     }
   }
 
