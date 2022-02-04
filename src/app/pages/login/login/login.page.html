@@ -1,13 +1,24 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>login</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-  <div style="margin: 30px; margin-top: 100%">
-    <ion-button (click)="isRegister = false; openModalLoginRegister(isRegister)" style="border-radius: 28px; font-weight: bold;" expand="full">Entrar</ion-button>
-    <ion-button (click)="isRegister = true; openModalLoginRegister(isRegister)" style="border-radius: 28px; font-weight: bold;" expand="full">Cadastrar</ion-button>
-    <!-- <ion-button [routerLink]="['/agenda']" style="border-radius: 28px; font-weight: bold;" expand="full">Pular</ion-button> -->
+  <section class="title">
+    <span>GESTOR FINANÇAS</span>
+  </section>
+
+  <div class="container-buttons">
+    <ion-button
+      fill="outline"
+      shape="round"
+      class="button"
+      (click)="isRegister = false; openModalLoginRegister(isRegister)"
+      expand="full"
+      >Entrar</ion-button
+    >
+    <ion-button
+      fill="solid"
+      shape="round"
+      class="button"
+      (click)="isRegister = true; openModalLoginRegister(isRegister)"
+      expand="full"
+      >Cadastrar</ion-button
+    >
   </div>
 </ion-content>

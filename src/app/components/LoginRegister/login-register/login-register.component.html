@@ -7,21 +7,52 @@
 </ion-header>
 
 <ion-content>
-  <div style="margin: 20px; border-radius: 25px; bottom: 0; margin-top: 50%">
-    <ion-item style="margin: 10px" *ngIf="isRegister">
+
+  <section class="title">
+    <span *ngIf="isRegister">CRIAR UMA CONTA</span>
+    <span *ngIf="!isRegister">ENTRAR NA SUA CONTA</span>
+  </section>
+
+  <div class="form">
+    <ion-item *ngIf="isRegister">
       <ion-label position="floating">Nome</ion-label>
-      <ion-input [(ngModel)]="payloadLoginRegister.name"></ion-input>
+      <ion-input
+        [(ngModel)]="payloadLoginRegister.name"
+      ></ion-input>
     </ion-item>
-    <ion-item style="margin: 10px">
+    <ion-item>
       <ion-label position="floating">Email</ion-label>
       <ion-input [(ngModel)]="payloadLoginRegister.email"></ion-input>
     </ion-item>
-    <ion-item style="margin: 10px">
+    <ion-item>
       <ion-label position="floating">Senha</ion-label>
-      <ion-input type="password" [(ngModel)]="payloadLoginRegister.password"></ion-input>
+      <ion-input
+        type="password"
+        [(ngModel)]="payloadLoginRegister.password"
+      ></ion-input>
     </ion-item>
   </div>
 
-  <ion-button *ngIf="isRegister" expand="full" style="margin: 30px;" [disabled]="!isButtonValid" (click)="register()">Cadastrar</ion-button>
-  <ion-button *ngIf="!isRegister" expand="full" style="margin: 30px;" [disabled]="!isButtonValid" (click)="login()">Entrar</ion-button>
+  <ion-button
+    *ngIf="isRegister"
+    expand="full"
+    fill="solid"
+    shape="round"
+    class="button"
+    style="margin: 30px"
+    [disabled]="!isButtonValid"
+    (click)="register()"
+    >Cadastrar</ion-button
+  >
+  <ion-button
+    *ngIf="!isRegister"
+    expand="full"
+    fill="outline"
+    shape="round"
+    class="button"
+    style="margin: 30px"
+    [disabled]="!isButtonValid"
+    (click)="login()"
+    >Entrar</ion-button
+  >
 </ion-content>

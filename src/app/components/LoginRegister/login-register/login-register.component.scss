@@ -1,0 +1,25 @@
+.title {
+  margin: 70px auto;
+  width: 100%;
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.form {
+  margin: 20px;
+  border-radius: 25px;
+  bottom: 0;
+  margin-top: 50%;
+
+  ion-item {
+    margin: 10px;
+    border-radius: 15px;
+  }
+}
+
+.button {
+  border-radius: 28px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
