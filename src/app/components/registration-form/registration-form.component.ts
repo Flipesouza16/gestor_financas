@@ -174,12 +174,13 @@ export class RegistrationFormComponent implements OnInit {
 
       this.userLogged.listOfBuyers = JSON.stringify(this.listOfBuyersNames);
 
+      console.log('userLogged: ',this.userLogged);
       await Storage.set({
         key: 'user-logged',
         value: JSON.stringify(this.userLogged)
       });
 
-      this.userDataService.updateUser(this.userLogged);
+     this.userDataService.updateUser(this.userLogged);
     }
   }
 

@@ -99,6 +99,8 @@ export class AgendaPage implements OnInit {
   }
 
   async getUserLoggedAndSaveToStorage(users: UserModel[]) {
+    console.log('aq n chega');
+
     this.userLogged = await this.userDataService.getCurrentUserByStorage();
 
     const currentUserCredentials = this.userLogged ? this.userLogged : this.authService.userCredentials;
@@ -118,6 +120,7 @@ export class AgendaPage implements OnInit {
     this.userLogged = await this.userDataService.getCurrentUserByStorage();
     if(this.userLogged) {
       this.userLogged.purchases = JSON.stringify(this.listPurchasesByMonth);
+      console.log('this.userLogged: ',this.userLogged);
       this.userDataService.updateUser(this.userLogged);
     }
   }
@@ -167,6 +170,7 @@ export class AgendaPage implements OnInit {
     const alert = await this.alertCtrl.create({
       header: 'Sair da conta',
       subHeader: 'Tem certeza que deseja sair?',
+      mode: 'ios',
       buttons: [
         {
           text: 'Cancelar'

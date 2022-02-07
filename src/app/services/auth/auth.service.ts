@@ -47,7 +47,10 @@ export class AuthService {
       key: 'users',
     });
 
-    const users = JSON.parse(value) as any[];
+    let users = JSON.parse(value) as any[];
+    if(!users) {
+      users = [];
+    }
     users.push(user);
 
     await Storage.set({

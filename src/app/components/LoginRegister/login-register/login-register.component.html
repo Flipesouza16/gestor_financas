@@ -24,12 +24,15 @@
       <ion-label position="floating">Email</ion-label>
       <ion-input [(ngModel)]="payloadLoginRegister.email"></ion-input>
     </ion-item>
-    <ion-item>
+    <ion-item style="align-items: center;">
       <ion-label position="floating">Senha</ion-label>
       <ion-input
-        type="password"
+        [type]="visibilityPassword ? 'text' : 'password'"
         [(ngModel)]="payloadLoginRegister.password"
-      ></ion-input>
+      >
+    </ion-input>
+    <ion-icon *ngIf="visibilityPassword" (click)="toggleVisibilityPassword()" slot="end" name="eye"></ion-icon>
+    <ion-icon *ngIf="!visibilityPassword" (click)="toggleVisibilityPassword()" slot="end" name="eye-off"></ion-icon>
     </ion-item>
   </div>
 

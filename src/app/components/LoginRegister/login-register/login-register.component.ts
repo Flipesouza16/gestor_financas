@@ -21,6 +21,7 @@ export class LoginRegisterComponent implements OnInit {
     password: '',
   };
   loading;
+  visibilityPassword = false;
 
   constructor(
     private modalCtrl: ModalController,
@@ -105,6 +106,10 @@ export class LoginRegisterComponent implements OnInit {
     });
 
     await toast.present();
+  }
+
+  toggleVisibilityPassword() {
+    this.visibilityPassword = !this.visibilityPassword;
   }
 
   dismiss() {

@@ -1,23 +1,30 @@
 import { Injectable } from '@angular/core';
-import { collectionData, collection, doc, docData, Firestore, addDoc, deleteDoc, updateDoc } from '@angular/fire/firestore';
+import {
+  collectionData,
+  collection,
+  doc,
+  docData,
+  Firestore,
+  addDoc,
+  deleteDoc,
+  updateDoc,
+} from '@angular/fire/firestore';
 import { Storage } from '@capacitor/storage';
-import { Observable, Subject } from 'rxjs';
+import { Observable } from 'rxjs';
 import { UserModel } from 'src/app/interfaces/user';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
-
 export class UserDataService {
-
-  constructor(private firestore: Firestore) { }
+  constructor(private firestore: Firestore) {}
 
   async getCurrentUserByStorage() {
     const { value: user } = await Storage.get({
-      key: 'user-logged'
+      key: 'user-logged',
     });
 
-    if(user !== 'undefined') {
+    if (user !== 'undefined') {
       return JSON.parse(user);
     } else {
       return;
@@ -26,7 +33,9 @@ export class UserDataService {
 
   getUsers() {
     const usersRef = collection(this.firestore, 'users');
-    return collectionData(usersRef, { idField: 'id' }) as Observable<UserModel[]>;
+    return collectionData(usersRef, { idField: 'id' }) as Observable<
+      UserModel[]
+    >;
   }
 
   getUserById(id): Observable<UserModel> {
@@ -36,7 +45,9 @@ export class UserDataService {
 
   addUser(user: UserModel) {
     const notesRef = collection(this.firestore, 'users');
-    return addDoc(notesRef, user);
+    const newUser = JSON.parse(JSON.stringify(user));
+    delete newUser.password;
+    return addDoc(notesRef, newUser);
   }
 
   deleteUser(user: UserModel) {
@@ -45,9 +56,13 @@ export class UserDataService {
   }
 
   updateUser(user: UserModel) {
-    console.log('update user: ',user);
+    console.log('update user: ', user);
 
     const userDocRef = doc(this.firestore, `users/${user.id}`);
-    return updateDoc(userDocRef, { ...user, purchases: user?.purchases || '', listOfBuyers: user?.listOfBuyers || '' });
+    return updateDoc(userDocRef, {
+      ...user,
+      purchases: user?.purchases || '',
+      listOfBuyers: user?.listOfBuyers || '',
+    });
   }
 }
