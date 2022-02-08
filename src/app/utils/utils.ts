@@ -86,3 +86,8 @@ export const getEmptyObjectOfPurchaseByMonth = () => {
   };
   return purchases;
 };
+
+export const fecharTeclado = (event: any) => {
+  const element = event.target as HTMLInputElement;
+  element.blur();
+};

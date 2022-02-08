@@ -7,7 +7,6 @@
 </ion-header>
 
 <ion-content>
-
   <section class="title">
     <span *ngIf="isRegister">CRIAR UMA CONTA</span>
     <span *ngIf="!isRegister">ENTRAR NA SUA CONTA</span>
@@ -18,21 +17,36 @@
       <ion-label position="floating">Nome</ion-label>
       <ion-input
         [(ngModel)]="payloadLoginRegister.name"
+        (keyup.enter)="fecharTeclado($event)"
       ></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="floating">Email</ion-label>
-      <ion-input [(ngModel)]="payloadLoginRegister.email"></ion-input>
+      <ion-input
+        (keyup.enter)="fecharTeclado($event)"
+        [(ngModel)]="payloadLoginRegister.email"
+      ></ion-input>
     </ion-item>
-    <ion-item style="align-items: center;">
+    <ion-item style="align-items: center">
       <ion-label position="floating">Senha</ion-label>
       <ion-input
+        (keyup.enter)="fecharTeclado($event)"
         [type]="visibilityPassword ? 'text' : 'password'"
         [(ngModel)]="payloadLoginRegister.password"
       >
-    </ion-input>
-    <ion-icon *ngIf="visibilityPassword" (click)="toggleVisibilityPassword()" slot="end" name="eye"></ion-icon>
-    <ion-icon *ngIf="!visibilityPassword" (click)="toggleVisibilityPassword()" slot="end" name="eye-off"></ion-icon>
+      </ion-input>
+      <ion-icon
+        *ngIf="visibilityPassword"
+        (click)="toggleVisibilityPassword()"
+        slot="end"
+        name="eye"
+      ></ion-icon>
+      <ion-icon
+        *ngIf="!visibilityPassword"
+        (click)="toggleVisibilityPassword()"
+        slot="end"
+        name="eye-off"
+      ></ion-icon>
     </ion-item>
   </div>
 

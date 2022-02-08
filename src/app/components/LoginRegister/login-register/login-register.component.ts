@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import {
-  LoadingController,
   ModalController,
   ToastController,
 } from '@ionic/angular';
 import { UserModel } from 'src/app/interfaces/user';
 import { AuthService } from 'src/app/services/auth/auth.service';
 import { UtilsService } from 'src/app/services/utils/utils.service';
-
+import { fecharTeclado } from '../../../utils/utils';
 @Component({
   selector: 'app-login-register',
   templateUrl: './login-register.component.html',
   styleUrls: ['./login-register.component.scss'],
 })
 export class LoginRegisterComponent implements OnInit {
+  fecharTeclado = fecharTeclado;
   isRegister: boolean;
   payloadLoginRegister: UserModel = {
     name: '',

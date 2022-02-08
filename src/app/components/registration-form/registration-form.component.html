@@ -23,6 +23,7 @@
           <ion-label position="floating">Título da Compra</ion-label>
           <ion-input
             [value]="payloadRegistrationForm.purchaseTitle"
+            (keyup.enter)="fecharTeclado($event)"
             [(ngModel)]="payloadRegistrationForm.purchaseTitle"
           ></ion-input>
         </ion-item>
@@ -57,6 +58,7 @@
               type="number"
               placeholder="0,00"
               [value]="purchaseValueFormatted"
+              (keyup.enter)="fecharTeclado($event)"
               (ionChange)="formatValue($event)"
             >
             </ion-input>
@@ -76,6 +78,7 @@
               type="number"
               placeholder="0,00"
               [value]="purchaseValueFormatted"
+              (keyup.enter)="fecharTeclado($event)"
               (ionChange)="formatValue($event, true)"
             ></ion-input>
             <span style="margin-right: 100%">{{
@@ -116,6 +119,8 @@
             }}</ion-label
           >
           <ion-datetime
+            doneText="OK"
+            cancelText="Cancelar"
             #popoverDatetime
             displayFormat="DD"
             (ionChange)="getDate(popoverDatetime.value)"

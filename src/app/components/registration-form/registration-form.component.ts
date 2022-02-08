@@ -13,6 +13,7 @@ import { Storage } from '@capacitor/storage';
 import * as moment from 'moment';
 import { UserModel } from 'src/app/interfaces/user';
 import { UserDataService } from 'src/app/services/data/userData.service';
+import { fecharTeclado } from '../../utils/utils';
 
 @Component({
   selector: 'app-registration-form',
@@ -22,6 +23,7 @@ import { UserDataService } from 'src/app/services/data/userData.service';
 export class RegistrationFormComponent implements OnInit {
   @ViewChild('inputNameWhoIsBuying') inputNameWhoIsBuying: any;
 
+  fecharTeclado = fecharTeclado;
   mascaraMoedaReal = mascaraMoedaReal;
   capitalizeFirstLetter = capitalizeFirstLetter;
   userLogged: UserModel;
